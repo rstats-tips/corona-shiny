@@ -6,3 +6,4 @@ corona_cache
 raw-data.Rda
 rsconnect/*
 .Renviron
+flexdashboard.dcf

@@ -115,10 +115,9 @@ source("leaflet-functions.R")
   })   
 ```
 
-
 Sidebar {.sidebar data-width=300}
 -----------------------------------------------------------------------
-
+### Bundesland wählen
 ```{r}
   leafletOutput("map_germany")
   output$map_germany <- renderLeaflet({
@@ -146,6 +145,19 @@ Fehler in der Auswertung gehen zu meinen Lasten.
 Kontakt per E-Mail: rstats.tips@gmail.com
 
 [Sourcecode auf Github](https://github.com/rstats-tips/corona-shiny)
+
+Row {data-height=200}
+-----------------------------------------------------------------------
+### Anwendungshinweise
+
+Wähle auf der linken Seite ein Bundesland aus. Auf der rechten Seite wird dann
+das gewählte Bundesland auf Landkreisebene in zwei Grafiken angezeigt.
+
+Die linke Grafik zeigt die aktuelle Anzahl der Infektionen, die rechte die Änderung
+innerhalb von 7 Tageb.
+
+Per Klick lässt sich ein Landkreis auswählen. Dieser wird dann darunter im 
+zeitlichen Verlauf dargestellt.
 
 Row
 -----------------------------------------------------------------------
@@ -186,6 +198,8 @@ Row
     get_landkreis_by_id(active_landkreis()), " am ", format(input$date, format = "%d.%m.%Y"))
   })`  
 
+Per Klick auf einen Datenpunkt lässt sich der Zeitpunkt für die Kartendarstellung auswählen.
+
 ```{r}
   plotlyOutput("landkreis_plot")
   output$landkreis_plot <- renderPlotly({
@@ -219,6 +233,9 @@ Row
 
 
 ### Liste der Landkreise des Landes `r renderText({active_bundesland()})` am `r renderText({format(input$date, format = "%d.%m.%Y")})`
+
+
+Suche und wähle eine Landkreis zur Detaildarstellung per Klick aus.
 
 ```{r}
 DTOutput("table_of_bundesland")

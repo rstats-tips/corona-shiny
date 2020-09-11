@@ -1,0 +1,7 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+corona_cache
+raw-data.Rda
+rsconnect/*

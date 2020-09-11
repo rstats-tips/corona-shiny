@@ -17,3 +17,7 @@ This app is hosted at Shinyapps.io: https://rstats-tips.shinyapps.io/corona-shin
 
 You can also run it using binder:
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/rstats-tips/corona-shiny/master)
+
+## More information
+You can find more information about this shiny app at my blogpost at
+https://www.rstats-tips.net/2020/09/08/shiny-app-to-explore-covid-19-in-germany/

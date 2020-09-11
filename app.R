@@ -74,7 +74,8 @@ ui <- fluidPage(
       Pavel Mayer genutzt." ),
       tags$p("Fehler in der Auswertung gehen zu meinen Lasten."),
       tags$a(href="https://www.rstats-tips.net/2020/09/08/shiny-app-to-explore-covid-19-in-germany/", "Mehr Infos zur App in meinem Blog"),
-      tags$p("Kontakt per E-Mail: rstats.tips@gmail.com")
+      tags$p("Kontakt per E-Mail: rstats.tips@gmail.com"),
+      tags$a(href="https://github.com/rstats-tips/corona-shiny", "Sourcecode auf Github")
     ),
 
 

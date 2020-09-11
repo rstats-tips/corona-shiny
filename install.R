@@ -9,6 +9,7 @@ install.packages("DT")
 install.packages("plotly")
 install.packages("leaflet")
 install.packages("geojsonio")
+install.packages("flexdashboard")
 
 # Shiny
 install.packages("shiny")

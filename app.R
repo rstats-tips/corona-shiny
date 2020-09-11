@@ -55,6 +55,7 @@ ui <- fluidPage(
 
   # Application title
   titlePanel("Corona in Deutschland im zeitlichen Verlauf auf Landkreisebene"),
+  tags$h3(textOutput("bundesland_datum_text")),
   tags$p("Auf der linken Seite kann man durch Anklicken ein Bundesland wählen."),
   tags$p("Auf der rechten Seite wird dieses Bundesland dann auf Landkreisebene dargestellt."),
   tags$p("Es wird zum einen der Stand der Neu-Infizierten pro 100.000 Einwohner dargestellt wie auch
@@ -79,8 +80,7 @@ ui <- fluidPage(
 
     mainPanel(
       fluidRow(
-        column(12, tags$h1(textOutput("bundesland_datum_text")),
-                    tags$p("Durch Anklicken eines Landkreises wird dessen zeitlicher Verlauf darunter angezeigt.")),
+        column(12, tags$p("Durch Anklicken eines Landkreises wird dessen zeitlicher Verlauf darunter angezeigt.")),
       ),
       fluidRow(
         column(6,
@@ -138,7 +138,7 @@ server <- function(input, output, session) {
   )
 
   output$bundesland_datum_text <- renderText({
-    paste0(active_bundesland(), " am ", input$date)
+    paste0(active_bundesland(), " am ", format(input$date, format = "%d.%m.%Y"))
   })
 
   output$landkreis <- renderText({

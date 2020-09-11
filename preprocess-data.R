@@ -7,7 +7,7 @@ if (file.exists(cache_filename)) {
   refetch <- TRUE
 }
 
-# refetch <- FALSE
+refetch <- FALSE
 
 if(refetch) {
   url_landkreise_full <- "https://pavelmayer.de/covid/risks/full-data.csv"

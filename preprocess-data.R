@@ -106,11 +106,6 @@ data_bundeslaender_per_day <- data_landkreise_per_day %>%
   )
 
 
-# # http://opendatalab.de/projects/geojson-utilities/
-# bundeslaender_geo <- geojson_read("bundeslaender_simplify200.geojson",
-#   what = "sp"
-# )
-
 # https://public.opendatasoft.com/explore/dataset/bundesland/export/
 bundeslaender_geo <- geojson_read("bundesland.geojson",
                                   what = "sp"

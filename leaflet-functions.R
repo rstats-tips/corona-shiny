@@ -16,9 +16,9 @@ generate_leaflet <- function(data, kennzahl, title, landkreis_highlighted = NA) 
   
   # Create a color palette for the map:
   if (kennzahl == "delta_7_per_100k") {
-    mypalette <- colorNumeric(c("blue", "green", "red"), -51:51)
+    mypalette <- colorNumeric("viridis", -51:51)
   }else{
-    mypalette <- colorNumeric(c("green", "yellow", "red", "magenta"), 0:51)
+    mypalette <- colorNumeric("viridis", 0:51)
   }
   
   labels_normal <- paste(
@@ -85,9 +85,9 @@ generate_leaflet_germany <- function(data, kennzahl, title) {
   
   # Create a color palette for the map:
   if (kennzahl == "delta_7_per_100k") {
-    mypalette <- colorNumeric(c("blue", "green", "red"), -51:51)
+    mypalette <- colorNumeric("viridis", -51:51)
   }else{
-    mypalette <- colorNumeric(c("green", "yellow", "red", "magenta"), 0:51)
+    mypalette <- colorNumeric("viridis", 0:51)
   }
   
   labels_normal <- paste(

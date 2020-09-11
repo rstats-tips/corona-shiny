@@ -210,9 +210,7 @@ Per Klick auf einen Datenpunkt lässt sich der Zeitpunkt für die Kartendarstell
       geom_line(alpha = 0.5, color = "lightGrey") +
       geom_vline(xintercept = as.numeric(ymd(input$date)), color = "black") +
       geom_vline(xintercept = as.numeric(ymd(input$date) - days(7)), color = "grey") +
-      scale_color_gradient2(midpoint = 15, low = "green", mid = "yellow",
-                           high = "red", space = "Lab", limits=c(0, 50), oob=squish,
-                           name = NULL, guide = FALSE) +
+      scale_color_viridis_c( name = NULL, guide = FALSE) +
       
       labs(
         title = get_landkreis_by_id(active_landkreis()),

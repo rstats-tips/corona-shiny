@@ -16,7 +16,7 @@ of several days.
 This app is hosted at Shinyapps.io: https://rstats-tips.shinyapps.io/corona-shiny/
 
 You can also run it using binder:
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/rstats-tips/corona-shiny/master)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/rstats-tips/corona-shiny/master?urlpath=shiny%2F)
 
 ## More information
 You can find more information about this shiny app at my blogpost at

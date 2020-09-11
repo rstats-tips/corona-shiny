@@ -99,7 +99,7 @@ generate_leaflet_germany <- function(data, kennzahl, title) {
     lapply(htmltools::HTML)
   
   leaflet(data = bundeslaender_geo) %>%
-    addLegend(pal = mypalette, values = ~fill_value, opacity = 0.5, title = title, position = "bottomleft") %>%
+    # addLegend(pal = mypalette, values = ~fill_value, opacity = 0.5, title = title, position = "bottomleft") %>%
     addPolygons(
       fillColor = ~ mypalette(fill_value),
       fillOpacity = 0.8,

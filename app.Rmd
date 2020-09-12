@@ -3,7 +3,7 @@ title: "Corona in Deutschland im zeitlichen Verlauf auf Landkreisebene"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
-    vertical_layout: fill
+    vertical_layout: scroll
 runtime: shiny
 ---
 
@@ -146,7 +146,7 @@ Kontakt per E-Mail: rstats.tips@gmail.com
 
 [Sourcecode auf Github](https://github.com/rstats-tips/corona-shiny)
 
-Row {data-height=200}
+Row 
 -----------------------------------------------------------------------
 ### Anwendungshinweise
 

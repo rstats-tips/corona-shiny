@@ -154,7 +154,7 @@ Wähle auf der linken Seite ein Bundesland aus. Auf der rechten Seite wird dann
 das gewählte Bundesland auf Landkreisebene in zwei Grafiken angezeigt.
 
 Die linke Grafik zeigt die aktuelle Anzahl der Infektionen, die rechte die Änderung
-innerhalb von 7 Tageb.
+innerhalb von 7 Tagen.
 
 Per Klick lässt sich ein Landkreis auswählen. Dieser wird dann darunter im 
 zeitlichen Verlauf dargestellt.

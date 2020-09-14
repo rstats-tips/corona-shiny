@@ -35,7 +35,7 @@ initial_Bundesland <- function(){
 }
 
 initial_Landkreis <- function() {
-  data_landkreise_per_day %>% 
+  data_landkreise_per_day_initial %>% 
     ungroup() %>% 
     filter(Bundesland == initial_Bundesland()) %>% 
     filter(MeldedatumKlar == max(MeldedatumKlar)) %>% 
@@ -51,8 +51,15 @@ source("leaflet-functions.R")
   active_landkreis <- reactiveVal(initial_Landkreis())
   active_bundesland <- reactiveVal(initial_Bundesland())
   
+  data_landkreise_per_day <- reactiveVal(data_landkreise_per_day_initial)
+  data_bundeslaender_per_day <- reactiveVal(data_bundeslaender_per_day_initial)
+  
+  date_of_cache_file <- reactiveVal(
+    format(file.info(cache_filename)$ctime, format = "%d.%m.%Y, %H:%M")
+  )
+  
   data_show <- reactive({
-    data_landkreise_per_day %>%
+    data_landkreise_per_day() %>%
       filter(MeldedatumKlar == input$date) %>%
       filter(Bundesland == active_bundesland()) %>%
       ungroup()
@@ -104,7 +111,7 @@ source("leaflet-functions.R")
   })   
   
   observeEvent(event_data("plotly_click", source = 'A'), {
-    new_date <- data_landkreise_per_day %>%
+    new_date <- data_landkreise_per_day() %>%
       filter(IdLandkreis == active_landkreis()) %>% 
       filter(
         row_number() == event_data("plotly_click")$pointNumber + 1
@@ -113,6 +120,19 @@ source("leaflet-functions.R")
 
     updateSliderInput(session, "date", value = as.Date(new_date))
   })   
+  
+  observeEvent(input$refresh_data, {
+    date_of_cache_file("Please wait ...")
+    data_landkreise_per_day(get_initial_landkreis_data(force_refresh = TRUE))
+    data_bundeslaender_per_day(get_initial_bundesland_data(data_landkreise_per_day()))
+    date_of_cache_file(format(file.info(cache_filename)$ctime, format = "%d.%m.%Y, %H:%M"))
+    updateSliderInput(session, "date", 
+      min = data_landkreise_per_day()$MeldedatumKlar %>% min(),
+      max = data_landkreise_per_day()$MeldedatumKlar %>% max()
+    )
+    date_of_cache_file(format(file.info(cache_filename)$ctime, format = "%d.%m.%Y, %H:%M"))
+    print("Refreshed")
+  })  
 ```
 
 Sidebar {.sidebar data-width=300}
@@ -121,21 +141,30 @@ Sidebar {.sidebar data-width=300}
 ```{r}
   leafletOutput("map_germany")
   output$map_germany <- renderLeaflet({
-    gg <- data_bundeslaender_per_day %>%
+    gg <- data_bundeslaender_per_day() %>%
       filter(MeldedatumKlar == input$date) %>%
       generate_leaflet_germany("infected_7_per_100k", "Inf. pro 100k")
 
     gg
   })
- 
-  
+
   sliderInput("date",
     "Datum:",
-    min = data_landkreise_per_day$MeldedatumKlar %>% min(),
-    max = data_landkreise_per_day$MeldedatumKlar %>% max(),
-    value = data_landkreise_per_day$MeldedatumKlar %>% max()
+    min = data_landkreise_per_day_initial$MeldedatumKlar %>% min(),
+    max = data_landkreise_per_day_initial$MeldedatumKlar %>% max(),
+    value = data_landkreise_per_day_initial$MeldedatumKlar %>% max()
   )
 ```
+
+### Letztes Datenupdate
+```{r}
+  renderText(date_of_cache_file())
+
+  actionButton("refresh_data", "Daten aktualisieren")
+```
+
+
+### Infos
 
 Zur Darstellung werden Daten von [Pavel Mayer](https://pavelmayer.de/covid/risks/#tabletop) genutzt.
 Fehler in der Auswertung gehen zu meinen Lasten.
@@ -203,7 +232,7 @@ Per Klick auf einen Datenpunkt lässt sich der Zeitpunkt für die Kartendarstell
 ```{r}
   plotlyOutput("landkreis_plot")
   output$landkreis_plot <- renderPlotly({
-    gg <- data_landkreise_per_day %>%
+    gg <- data_landkreise_per_day() %>%
       filter(IdLandkreis == active_landkreis()) %>%
       ggplot(aes(x = MeldedatumKlar, y = infected_7_per_100k)) +
       geom_point(aes(color = infected_7_per_100k)) +

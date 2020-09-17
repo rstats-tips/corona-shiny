@@ -39,7 +39,7 @@ initial_Landkreis <- function() {
     ungroup() %>% 
     filter(Bundesland == initial_Bundesland()) %>% 
     filter(MeldedatumKlar == max(MeldedatumKlar)) %>% 
-    slice_max(1, order_by = infected_7_per_100k) %>% 
+    slice_max(order_by = infected_7_per_100k, n = 1) %>% 
     pull(IdLandkreis)
 }
 

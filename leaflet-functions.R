@@ -71,7 +71,7 @@ generate_leaflet <- function(data, kennzahl, title, landkreis_highlighted = NA) 
     )
 }
 
-generate_leaflet_germany <- function(data, kennzahl, title) {
+generate_leaflet_germany <- function(data, kennzahl, title, legend = FALSE) {
   bundeslaender_geo@data <- bundeslaender_geo@data %>%
     left_join(data %>% select(Bundesland,
                               infected_7_per_100k,  infected_7_per_100k_fill,
@@ -98,8 +98,13 @@ generate_leaflet_germany <- function(data, kennzahl, title) {
   ) %>%
     lapply(htmltools::HTML)
   
-  leaflet(data = bundeslaender_geo) %>%
-    # addLegend(pal = mypalette, values = ~fill_value, opacity = 0.5, title = title, position = "bottomleft") %>%
+  if (legend) {
+    tmp <- leaflet(data = bundeslaender_geo) %>%
+      addLegend(pal = mypalette, values = ~fill_value, opacity = 0.5, title = title, position = "bottomleft")
+  } else {
+    tmp <- leaflet(data = bundeslaender_geo) 
+  }
+  tmp %>%
     addPolygons(
       fillColor = ~ mypalette(fill_value),
       fillOpacity = 0.8,

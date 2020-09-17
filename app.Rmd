@@ -136,7 +136,8 @@ source("leaflet-functions.R")
 ```
 
 Sidebar {.sidebar data-width=300}
------------------------------------------------------------------------
+====================================================================
+
 ### Bundesland wählen
 ```{r}
   leafletOutput("map_germany")
@@ -175,6 +176,9 @@ Kontakt per E-Mail: rstats.tips@gmail.com
 
 [Sourcecode auf Github](https://github.com/rstats-tips/corona-shiny)
 
+Landkreise
+=====================================  
+
 Row 
 -----------------------------------------------------------------------
 ### Anwendungshinweise
@@ -188,7 +192,7 @@ innerhalb von 7 Tagen.
 Per Klick lässt sich ein Landkreis auswählen. Dieser wird dann darunter im 
 zeitlichen Verlauf dargestellt.
 
-Row
+Row 
 -----------------------------------------------------------------------
 
 ### **Anzahl der Infektionen** innerhalb von 7 Tagen pro 100.000 Einwohner in `r renderText({
@@ -222,10 +226,7 @@ Row
 Row
 -----------------------------------------------------------------------
 
-### `r renderText({
-    paste0(active_bundesland(), " / ",
-    get_landkreis_by_id(active_landkreis()), " am ", format(input$date, format = "%d.%m.%Y"))
-  })`  
+### `r renderText({ paste0(active_bundesland(), " / ",  get_landkreis_by_id(active_landkreis()), " am ", format(input$date, format = "%d.%m.%Y"))  })`  
 
 Per Klick auf einen Datenpunkt lässt sich der Zeitpunkt für die Kartendarstellung auswählen.
 
@@ -283,5 +284,98 @@ output$table_of_bundesland <-renderDT(
         pull(row)
         )
       )
+  )
+```
+
+Bundesländer
+=====================================  
+
+Row 
+---------------------------------
+
+### **Anzahl der Infektionen** innerhalb von 7 Tagen pro 100.000 Einwohner am `r renderText({    paste0(format(input$date, format = "%d.%m.%Y"))
+  })` 
+  
+```{r}
+  leafletOutput("map_germany_detail")
+  output$map_germany_detail <- renderLeaflet({
+    gg <- data_bundeslaender_per_day() %>%
+      filter(MeldedatumKlar == input$date) %>%
+      generate_leaflet_germany("infected_7_per_100k", "Inf. pro 100k",
+                               legend = TRUE)
+
+    gg
+  })
+```
+
+### **Änderung der Infektionen** innerhalb von 7 Tagen pro 100.000 Einwohner am `r renderText({
+    paste0(format(input$date, format = "%d.%m.%Y"))
+  })` zu den vorherigen 7 Tagen
+  
+```{r}
+  leafletOutput("map_germany_detail_delta")
+  output$map_germany_detail_delta <- renderLeaflet({
+    gg <- data_bundeslaender_per_day() %>%
+      filter(MeldedatumKlar == input$date) %>%
+      generate_leaflet_germany("delta_7_per_100k", "Delta Inf. pro 100k",
+                               legend = TRUE)
+
+    gg
+  })
+```
+
+Row 
+---------------------------------
+
+### `r renderText({ paste0(active_bundesland(), " am ", format(input$date, format = "%d.%m.%Y"))  })`  
+
+
+```{r}
+  plotlyOutput("bundesland_plot")
+  output$bundesland_plot <- renderPlotly({
+    gg <- data_bundeslaender_per_day() %>%
+      filter(Bundesland == active_bundesland()) %>%
+      ggplot(aes(x = MeldedatumKlar, y = infected_7_per_100k)) +
+      geom_point(aes(color = infected_7_per_100k)) +
+      geom_line(alpha = 0.5, color = "lightGrey") +
+      geom_vline(xintercept = as.numeric(ymd(input$date)), color = "black") +
+      geom_vline(xintercept = as.numeric(ymd(input$date) - days(7)), color = "grey") +
+      scale_color_gradient2(midpoint = 15, low = "green", mid = "yellow",
+                           high = "red", space = "Lab", limits=c(0, 50), oob=squish,
+                           name = NULL, guide = FALSE) +
+      
+      labs(
+        title = active_bundesland(),
+        x = "Date",
+        y = "Infections during 7 Days per 100k"
+      ) +
+      theme_bw()
+
+    gg <- ggplotly(gg, source = 'A') %>% 
+      event_register("plotly_click")
+    
+    gg
+  })
+```
+
+Row 
+---------------------------------
+
+### Liste der Bundesländer am `r renderText({format(input$date, format = "%d.%m.%Y")})`
+
+
+Suche und wähle ein Bundesland zur Detaildarstellung per Klick aus.
+
+```{r}
+DTOutput("table_of_bundeslaender")
+output$table_of_bundeslaender <-renderDT(
+    {
+      data_bundeslaender_per_day() %>%
+      filter(MeldedatumKlar == input$date) %>% 
+        select(-infected, -infected_7, -delta_7, -infected_7_before, 
+                -ends_with("_fill"))
+    },
+    server = TRUE,
+    
   )
 ```

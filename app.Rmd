@@ -108,7 +108,32 @@ source("leaflet-functions.R")
         slice(1) %>%
         pull(IdLandkreis)
     )
-  })   
+  }) 
+  
+  observeEvent(input$map_germany_detail_shape_click, { # update the location selectInput on map clicks
+    Bundesland <- input$map_germany_detail_shape_click
+    active_bundesland(Bundesland$id)
+    
+    # set first row to active_landkreis for plot
+    active_landkreis(
+      data_show_table() %>% 
+        slice(1) %>%
+        pull(IdLandkreis)
+    )
+  }) 
+    
+  observeEvent(input$map_germany_detail_delta_shape_click, { # update the location selectInput on map clicks
+    Bundesland <- input$map_germany_detail_delta_shape_click
+    active_bundesland(Bundesland$id)
+    
+    # set first row to active_landkreis for plot
+    active_landkreis(
+      data_show_table() %>% 
+        slice(1) %>%
+        pull(IdLandkreis)
+    )
+  }) 
+    
   
   observeEvent(event_data("plotly_click", source = 'A'), {
     new_date <- data_landkreise_per_day() %>%

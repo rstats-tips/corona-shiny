@@ -260,17 +260,21 @@ Per Klick auf einen Datenpunkt lässt sich der Zeitpunkt für die Kartendarstell
 ```{r}
   plotlyOutput("landkreis_plot")
   output$landkreis_plot <- renderPlotly({
+    data_bundeslaender <- data_bundeslaender_per_day() %>% 
+      filter(Bundesland == active_bundesland())
+    
     gg <- data_landkreise_per_day() %>%
       filter(IdLandkreis == active_landkreis()) %>%
       ggplot(aes(x = MeldedatumKlar, y = infected_7_per_100k)) +
       geom_point(aes(color = infected_7_per_100k)) +
-      geom_line(alpha = 0.5, color = "lightGrey") +
+      geom_line(alpha = 0.5, color = "lightGrey", aes(linetype = "Landkreis")) +
+      geom_line(data = data_bundeslaender, alpha = 0.5, color = "blue",  aes(linetype = "Bundesland")) + 
       geom_vline(xintercept = as.numeric(ymd(input$date)), color = "black") +
       geom_vline(xintercept = as.numeric(ymd(input$date) - days(7)), color = "grey") +
       scale_color_gradient2(midpoint = 15, low = "green", mid = "yellow",
                            high = "red", space = "Lab", limits=c(0, 50), oob=squish,
                            name = NULL, guide = FALSE) +
-      
+      scale_linetype_manual(values=c("dotted", "solid"), name = NULL) +
       labs(
         title = get_landkreis_by_id(active_landkreis()),
         x = "Date",

@@ -1,5 +1,5 @@
 ---
-title: "Corona in Deutschland im zeitlichen Verlauf auf Landkreisebene"
+title: "Corona in Deutschland im zeitlichen Verlauf auf Landkreis- und Bundeslandebene"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows

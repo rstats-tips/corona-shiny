@@ -86,7 +86,19 @@ source("leaflet-functions.R")
     }
   )  
   
- 
+  observeEvent(input$table_of_bundeslaender_rows_selected, {
+      selected_row <- ifelse(!is.null(input$table_of_bundeslaender_rows_selected),
+        input$table_of_bundeslaender_rows_selected,
+        1
+      )
+      data_bundeslaender_per_day() %>%
+        ungroup() %>% 
+        filter(MeldedatumKlar == input$date) %>% 
+        slice(selected_row) %>%
+        pull(Bundesland) %>% 
+        active_bundesland()
+    }
+  )  
   
   observeEvent(input$map_leaflet_shape_click, { # update the location selectInput on map clicks
     IdLandkreis <- input$map_leaflet_shape_click
@@ -391,6 +403,14 @@ output$table_of_bundeslaender <-renderDT(
                 -ends_with("_fill"))
     },
     server = TRUE,
-    
+    selection = list(mode = 'single', selected = c(
+      data_bundeslaender_per_day() %>%
+        ungroup() %>% 
+        filter(MeldedatumKlar == input$date) %>% 
+        mutate(row = row_number()) %>%
+        filter(Bundesland == active_bundesland()) %>% 
+        pull(row)
+        )
+      )    
   )
 ```

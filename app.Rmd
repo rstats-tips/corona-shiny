@@ -53,6 +53,7 @@ source("leaflet-functions.R")
   
   data_landkreise_per_day <- reactiveVal(data_landkreise_per_day_initial)
   data_bundeslaender_per_day <- reactiveVal(data_bundeslaender_per_day_initial)
+  data_germany_per_day <- reactiveVal(data_germany_per_day_initial)
   
   date_of_cache_file <- reactiveVal(
     format(file.info(cache_filename)$ctime, format = "%d.%m.%Y, %H:%M")
@@ -152,6 +153,7 @@ source("leaflet-functions.R")
     date_of_cache_file("Please wait ...")
     data_landkreise_per_day(get_initial_landkreis_data(force_refresh = TRUE))
     data_bundeslaender_per_day(get_initial_bundesland_data(data_landkreise_per_day()))
+    data_germany_per_day(get_intial_germany_data(data_bundeslaender_per_day()))
     date_of_cache_file(format(file.info(cache_filename)$ctime, format = "%d.%m.%Y, %H:%M"))
     updateSliderInput(session, "date", 
       min = data_landkreise_per_day()$MeldedatumKlar %>% min(),
@@ -269,12 +271,13 @@ Per Klick auf einen Datenpunkt lässt sich der Zeitpunkt für die Kartendarstell
       geom_point(aes(color = infected_7_per_100k)) +
       geom_line(alpha = 0.5, color = "lightGrey", aes(linetype = "Landkreis")) +
       geom_line(data = data_bundeslaender, alpha = 0.5, color = "blue",  aes(linetype = "Bundesland")) + 
+      geom_line(data = data_germany_per_day(), alpha = 0.5, color = "blue",  aes(linetype = "Deutschland")) + 
       geom_vline(xintercept = as.numeric(ymd(input$date)), color = "black") +
       geom_vline(xintercept = as.numeric(ymd(input$date) - days(7)), color = "grey") +
       scale_color_gradient2(midpoint = 15, low = "green", mid = "yellow",
                            high = "red", space = "Lab", limits=c(0, 50), oob=squish,
                            name = NULL, guide = FALSE) +
-      scale_linetype_manual(values=c("dotted", "solid"), name = NULL) +
+      scale_linetype_manual(values=c("dotted", "dotdash", "solid"), name = NULL) +
       labs(
         title = get_landkreis_by_id(active_landkreis()),
         x = "Date",
@@ -368,13 +371,14 @@ Row
       filter(Bundesland == active_bundesland()) %>%
       ggplot(aes(x = MeldedatumKlar, y = infected_7_per_100k)) +
       geom_point(aes(color = infected_7_per_100k)) +
-      geom_line(alpha = 0.5, color = "lightGrey") +
+      geom_line(alpha = 0.5, color = "lightGrey", aes(linetype = "Bundesland")) +
+      geom_line(data = data_germany_per_day(), alpha = 0.5, color = "blue",  aes(linetype = "Deutschland")) + 
       geom_vline(xintercept = as.numeric(ymd(input$date)), color = "black") +
       geom_vline(xintercept = as.numeric(ymd(input$date) - days(7)), color = "grey") +
       scale_color_gradient2(midpoint = 15, low = "green", mid = "yellow",
                            high = "red", space = "Lab", limits=c(0, 50), oob=squish,
                            name = NULL, guide = FALSE) +
-      
+      scale_linetype_manual(values=c("dotted", "dotdash"), name = NULL) +
       labs(
         title = active_bundesland(),
         x = "Date",

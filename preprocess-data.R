@@ -118,8 +118,37 @@ get_initial_bundesland_data <- function(data_landkreise_per_day){
     )
   return(data_bundeslaender_per_day)
 }
+
+get_initial_germany_data <- function(data_bundeslaender_per_day) {
+  data_germany_per_day  <- data_bundeslaender_per_day %>% 
+    group_by(MeldedatumKlar) %>%
+    summarize(
+      infected = sum(infected),
+      Bevoelkerung = sum(Bevoelkerung)
+    ) %>%
+    ungroup() %>%
+    complete(MeldedatumKlar, fill = list(infected = 0)) %>%
+    arrange(MeldedatumKlar) %>%
+    mutate(
+      infected_7 = rollsum(infected, 7, fill = NA, align = "right"),
+      infected_7_before = rollsum(lag(infected, n = 7), 7, fill = NA, align = "right"),
+      delta_7 = infected_7 - infected_7_before
+    ) %>%
+    mutate(
+      infected_7_per_100k = round(infected_7 / Bevoelkerung * 100000, 1),
+      delta_7_per_100k = round(delta_7 / Bevoelkerung * 100000, 1)
+    ) %>%
+    mutate(
+      infected_7_per_100k_fill = if_else(infected_7_per_100k < 0, 0, infected_7_per_100k),
+      infected_7_per_100k_fill = if_else(infected_7_per_100k > 50, 51, infected_7_per_100k),
+      delta_7_per_100k_fill = delta_7_per_100k
+    )
+  return(data_germany_per_day)
+}
+
 data_landkreise_per_day_initial <- get_initial_landkreis_data(force_refresh = FALSE)
 data_bundeslaender_per_day_initial <- get_initial_bundesland_data(data_landkreise_per_day_initial)
+data_germany_per_day_initial <- get_initial_germany_data(data_bundeslaender_per_day_initial)
 
 landkreise <- data_landkreise_per_day_initial %>%
   select(Landkreis, IdLandkreis, Bevoelkerung, Bundesland) %>%

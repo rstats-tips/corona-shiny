@@ -422,3 +422,21 @@ output$table_of_bundeslaender <-renderDT(
       )    
   )
 ```
+
+Detailansicht
+=====================================  
+
+Row {data-height=800}
+---------------------------------
+
+  
+```{r}
+  leafletOutput("map_leaflet_detail", height = "800")
+  output$map_leaflet_detail <- renderLeaflet({
+    gg <-  data_landkreise_per_day() %>%
+      filter(MeldedatumKlar == input$date) %>% 
+      generate_leaflet_detail("infected_7_per_100k", "Inf. pro 100k", active_landkreis())
+
+    gg
+  })
+```

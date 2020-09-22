@@ -176,6 +176,9 @@ landkreise_geo@data <- landkreise_geo@data %>%
   ) %>%
   select(cca_2)
 
+# Landkreisteile von Göttingen vereinen
+landkreise_geo <- raster::aggregate(landkreise_geo, by = 'cca_2') 
+
 # Berlin: https://github.com/funkeinteraktiv/Berlin-Geodaten
 berlin_geo <- geojson_read("berlin_bezirke.geojson", what = "sp")
 berlin_geo@data <- berlin_geo@data %>% 
@@ -185,3 +188,4 @@ berlin_geo@data <- berlin_geo@data %>%
 
 # Combine landkreise and bezirke of Berlin
 landkreise_geo <- rbind(landkreise_geo, berlin_geo)
+

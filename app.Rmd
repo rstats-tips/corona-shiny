@@ -59,6 +59,12 @@ source("leaflet-functions.R")
     format(file.info(cache_filename)$ctime, format = "%d.%m.%Y, %H:%M")
   )
   
+  date_of_latest_data <- reactive(
+    data_bundeslaender_per_day() %>% 
+      pull(MeldedatumKlar) %>% 
+      max()
+  )
+  
   data_show <- reactive({
     data_landkreise_per_day() %>%
       filter(MeldedatumKlar == input$date) %>%
@@ -188,7 +194,11 @@ Sidebar {.sidebar data-width=300}
 
 ### Letztes Datenupdate
 ```{r}
-  renderText(date_of_cache_file())
+  renderText(paste0("aktualisiert: ", date_of_cache_file()))
+  renderText(paste0("Daten bis: ", date_of_latest_data() %>%
+                      format(format = "%d.%m.%Y")
+                    )
+             )
   if(Sys.getenv("R_CONFIG_ACTIVE") != "shinyapps") {
     actionButton("refresh_data", "Daten aktualisieren")
   }

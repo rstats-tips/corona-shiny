@@ -441,3 +441,28 @@ Row {data-height=800}
     gg
   })
 ```
+
+Row
+---------------------------------------
+
+```{r}
+DTOutput("table_of_germany")
+output$table_of_germany <-renderDT(
+    {
+      data_landkreise_per_day() %>%
+      filter(MeldedatumKlar == input$date) %>% 
+        arrange(desc(infected_7_per_100k), desc(delta_7_per_100k)) %>% 
+        select(-infected, -infected_7, -delta_7, -infected_7_before, 
+               -IdLandkreis, -ends_with("_fill"))
+    },
+    server = TRUE,
+    # selection = "single",
+    # selection = list(mode = 'single', selected = c(
+    #   data_show_table() %>% 
+    #     mutate(row = row_number()) %>%
+    #     filter(IdLandkreis == active_landkreis()) %>% 
+    #     pull(row)
+    #     )
+    #   )
+  )
+```

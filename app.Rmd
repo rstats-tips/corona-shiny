@@ -189,8 +189,9 @@ Sidebar {.sidebar data-width=300}
 ### Letztes Datenupdate
 ```{r}
   renderText(date_of_cache_file())
-
-  actionButton("refresh_data", "Daten aktualisieren")
+  if(Sys.getenv("R_CONFIG_ACTIVE") != "shinyapps") {
+    actionButton("refresh_data", "Daten aktualisieren")
+  }
 ```
 
 

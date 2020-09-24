@@ -19,6 +19,7 @@ get_initial_landkreis_data <- function(force_refresh = FALSE) {
   }
   
   if(force_refresh) {
+    Sys.setlocale(category = "LC_ALL", locale = "de_DE.UTF-8")
     url_landkreise_full <- "https://pavelmayer.de/covid/risks/full-data.csv"
     data_landkreise_detail <- read_csv(url_landkreise_full, col_types = cols(
       Bundesland = col_character(),

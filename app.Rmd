@@ -153,7 +153,7 @@ source("leaflet-functions.R")
     date_of_cache_file("Please wait ...")
     data_landkreise_per_day(get_initial_landkreis_data(force_refresh = TRUE))
     data_bundeslaender_per_day(get_initial_bundesland_data(data_landkreise_per_day()))
-    data_germany_per_day(get_intial_germany_data(data_bundeslaender_per_day()))
+    data_germany_per_day(get_initial_germany_data(data_bundeslaender_per_day()))
     date_of_cache_file(format(file.info(cache_filename)$ctime, format = "%d.%m.%Y, %H:%M"))
     updateSliderInput(session, "date", 
       min = data_landkreise_per_day()$MeldedatumKlar %>% min(),

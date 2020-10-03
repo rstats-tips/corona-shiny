@@ -1,0 +1,12 @@
+name: corona-shiny-viridis
+title: corona-shiny-viridis
+username:
+account: rstats-tips
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2791926
+bundleId: 3621436
+url: https://rstats-tips.shinyapps.io/corona-shiny-viridis/
+when: 1599897800.15615
+asMultiple: FALSE
+asStatic: FALSE

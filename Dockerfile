@@ -32,12 +32,12 @@ RUN apt-get update && \
 ## renv.lock file
 COPY /app/renv.lock ./renv.lock
 
-## app folder
-COPY /app ./app
-
 # install renv & restore packages
 RUN Rscript -e 'install.packages("renv")'
 RUN Rscript -e 'renv::restore()'
+
+## app folder
+COPY /app ./app
 
 # expose port
 EXPOSE 3838

@@ -22,6 +22,10 @@ library(plotly)
 library(leaflet)
 library(geojsonio)
 
+# Maximum values for plotting
+max_infections <- 50
+max_delta_infections <- 15
+
 source("preprocess-data.R")
 
 get_landkreis_by_id <- function(IdLandkreis) {
@@ -38,7 +42,7 @@ initial_Landkreis <- function() {
   data_landkreise_per_day_initial %>% 
     ungroup() %>% 
     filter(Bundesland == initial_Bundesland()) %>% 
-    filter(MeldedatumKlar == max(MeldedatumKlar)) %>% 
+    filter(Meldedatum == max(Meldedatum)) %>% 
     slice_max(order_by = infected_7_per_100k, n = 1) %>% 
     pull(IdLandkreis)
 }
@@ -61,13 +65,13 @@ source("leaflet-functions.R")
   
   date_of_latest_data <- reactive(
     data_bundeslaender_per_day() %>% 
-      pull(MeldedatumKlar) %>% 
+      pull(Meldedatum) %>% 
       max()
   )
   
   data_show <- reactive({
     data_landkreise_per_day() %>%
-      filter(MeldedatumKlar == input$date) %>%
+      filter(Meldedatum == input$date) %>%
       filter(Bundesland == active_bundesland()) %>%
       ungroup()
   })
@@ -100,7 +104,7 @@ source("leaflet-functions.R")
       )
       data_bundeslaender_per_day() %>%
         ungroup() %>% 
-        filter(MeldedatumKlar == input$date) %>% 
+        filter(Meldedatum == input$date) %>% 
         slice(selected_row) %>%
         pull(Bundesland) %>% 
         active_bundesland()
@@ -150,7 +154,7 @@ source("leaflet-functions.R")
       filter(
         row_number() == event_data("plotly_click")$pointNumber + 1
       ) %>% 
-      pull(MeldedatumKlar) 
+      pull(Meldedatum) 
 
     updateSliderInput(session, "date", value = as.Date(new_date))
   })   
@@ -162,8 +166,8 @@ source("leaflet-functions.R")
     data_germany_per_day(get_initial_germany_data(data_bundeslaender_per_day()))
     date_of_cache_file(format(file.info(cache_filename)$ctime, format = "%d.%m.%Y, %H:%M"))
     updateSliderInput(session, "date", 
-      min = data_landkreise_per_day()$MeldedatumKlar %>% min(),
-      max = data_landkreise_per_day()$MeldedatumKlar %>% max()
+      min = data_landkreise_per_day()$Meldedatum %>% min(),
+      max = data_landkreise_per_day()$Meldedatum %>% max()
     )
     date_of_cache_file(format(file.info(cache_filename)$ctime, format = "%d.%m.%Y, %H:%M"))
     print("Refreshed")
@@ -178,7 +182,7 @@ Sidebar {.sidebar data-width=300}
   leafletOutput("map_germany")
   output$map_germany <- renderLeaflet({
     gg <- data_bundeslaender_per_day() %>%
-      filter(MeldedatumKlar == input$date) %>%
+      filter(Meldedatum == input$date) %>%
       generate_leaflet_germany("infected_7_per_100k", "Inf. pro 100k")
 
     gg
@@ -186,9 +190,9 @@ Sidebar {.sidebar data-width=300}
 
   sliderInput("date",
     "Datum:",
-    min = data_landkreise_per_day_initial$MeldedatumKlar %>% min(),
-    max = data_landkreise_per_day_initial$MeldedatumKlar %>% max(),
-    value = data_landkreise_per_day_initial$MeldedatumKlar %>% max()
+    min = data_landkreise_per_day_initial$Meldedatum %>% min(),
+    max = data_landkreise_per_day_initial$Meldedatum %>% max(),
+    value = data_landkreise_per_day_initial$Meldedatum %>% max()
   )
 ```
 
@@ -199,6 +203,7 @@ Sidebar {.sidebar data-width=300}
                       format(format = "%d.%m.%Y")
                     )
              )
+
   if(Sys.getenv("R_CONFIG_ACTIVE") != "shinyapps") {
     actionButton("refresh_data", "Daten aktualisieren")
   }
@@ -207,8 +212,10 @@ Sidebar {.sidebar data-width=300}
 
 ### Infos
 
-Zur Darstellung werden Daten von [Pavel Mayer](https://pavelmayer.de/covid/risks/#tabletop) genutzt.
+Zur Darstellung werden Daten des [RKI](https://opendata.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0.csv) genutzt.
 Fehler in der Auswertung gehen zu meinen Lasten.
+
+Bevölkerungsdaten entnehme ich den Daten von [Pavel Mayer](https://pavelmayer.de/covid/risks/#tabletop).
 
 [Mehr Infos zur App in meinem Blog](https://www.rstats-tips.net/2020/09/08/shiny-app-to-explore-covid-19-in-germany/)
 
@@ -278,7 +285,7 @@ Per Klick auf einen Datenpunkt lässt sich der Zeitpunkt für die Kartendarstell
     
     gg <- data_landkreise_per_day() %>%
       filter(IdLandkreis == active_landkreis()) %>%
-      ggplot(aes(x = MeldedatumKlar, y = infected_7_per_100k)) +
+      ggplot(aes(x = Meldedatum, y = infected_7_per_100k)) +
       geom_point(aes(color = infected_7_per_100k)) +
       geom_line(alpha = 0.5, color = "lightGrey", aes(linetype = "Landkreis")) +
       geom_line(data = data_bundeslaender, alpha = 0.5, color = "blue",  aes(linetype = "Bundesland")) + 
@@ -345,7 +352,7 @@ Row
   leafletOutput("map_germany_detail")
   output$map_germany_detail <- renderLeaflet({
     gg <- data_bundeslaender_per_day() %>%
-      filter(MeldedatumKlar == input$date) %>%
+      filter(Meldedatum == input$date) %>%
       generate_leaflet_germany("infected_7_per_100k", "Inf. pro 100k",
                                legend = TRUE)
 
@@ -361,7 +368,7 @@ Row
   leafletOutput("map_germany_detail_delta")
   output$map_germany_detail_delta <- renderLeaflet({
     gg <- data_bundeslaender_per_day() %>%
-      filter(MeldedatumKlar == input$date) %>%
+      filter(Meldedatum == input$date) %>%
       generate_leaflet_germany("delta_7_per_100k", "Delta Inf. pro 100k",
                                legend = TRUE)
 
@@ -380,7 +387,7 @@ Row
   output$bundesland_plot <- renderPlotly({
     gg <- data_bundeslaender_per_day() %>%
       filter(Bundesland == active_bundesland()) %>%
-      ggplot(aes(x = MeldedatumKlar, y = infected_7_per_100k)) +
+      ggplot(aes(x = Meldedatum, y = infected_7_per_100k)) +
       geom_point(aes(color = infected_7_per_100k)) +
       geom_line(alpha = 0.5, color = "lightGrey", aes(linetype = "Bundesland")) +
       geom_line(data = data_germany_per_day(), alpha = 0.5, color = "blue",  aes(linetype = "Deutschland")) + 
@@ -417,7 +424,7 @@ DTOutput("table_of_bundeslaender")
 output$table_of_bundeslaender <-renderDT(
     {
       data_bundeslaender_per_day() %>%
-      filter(MeldedatumKlar == input$date) %>% 
+      filter(Meldedatum == input$date) %>% 
         select(-infected, -infected_7, -delta_7, -infected_7_before, 
                 -ends_with("_fill"))
     },
@@ -425,7 +432,7 @@ output$table_of_bundeslaender <-renderDT(
     selection = list(mode = 'single', selected = c(
       data_bundeslaender_per_day() %>%
         ungroup() %>% 
-        filter(MeldedatumKlar == input$date) %>% 
+        filter(Meldedatum == input$date) %>% 
         mutate(row = row_number()) %>%
         filter(Bundesland == active_bundesland()) %>% 
         pull(row)
@@ -445,7 +452,7 @@ Row {data-height=800}
   leafletOutput("map_leaflet_detail", height = "800")
   output$map_leaflet_detail <- renderLeaflet({
     gg <-  data_landkreise_per_day() %>%
-      filter(MeldedatumKlar == input$date) %>% 
+      filter(Meldedatum == input$date) %>% 
       generate_leaflet_detail("infected_7_per_100k", "Inf. pro 100k", active_landkreis())
 
     gg
@@ -460,7 +467,7 @@ DTOutput("table_of_germany")
 output$table_of_germany <-renderDT(
     {
       data_landkreise_per_day() %>%
-      filter(MeldedatumKlar == input$date) %>% 
+      filter(Meldedatum == input$date) %>% 
         arrange(desc(infected_7_per_100k), desc(delta_7_per_100k)) %>% 
         select(-infected, -infected_7, -delta_7, -infected_7_before, 
                -IdLandkreis, -ends_with("_fill"))

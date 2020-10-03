@@ -16,9 +16,9 @@ generate_leaflet <- function(data, kennzahl, title, landkreis_highlighted = NA) 
   
   # Create a color palette for the map:
   if (kennzahl == "delta_7_per_100k") {
-    mypalette <- colorNumeric(c("blue", "green", "red"), -51:51)
+    mypalette <- colorNumeric(c("blue", "green",  "red"), (-max_delta_infections-1):(max_delta_infections+1))
   }else{
-    mypalette <- colorNumeric(c("green", "yellow", "red", "magenta"), 0:51)
+    mypalette <- colorNumeric(c("green", "yellow", "red", "magenta"), 0:(max_infections+1))
   }
   
   labels_normal <- paste(
@@ -85,9 +85,9 @@ generate_leaflet_germany <- function(data, kennzahl, title, legend = FALSE) {
   
   # Create a color palette for the map:
   if (kennzahl == "delta_7_per_100k") {
-    mypalette <- colorNumeric(c("blue", "green", "red"), -51:51)
+    mypalette <- colorNumeric(c("blue", "green",  "red"), (-max_delta_infections-1):(max_delta_infections+1))
   }else{
-    mypalette <- colorNumeric(c("green", "yellow", "red", "magenta"), 0:51)
+    mypalette <- colorNumeric(c("green", "yellow", "red", "magenta"), 0:(max_infections+1))
   }
   
   labels_normal <- paste(
@@ -142,9 +142,9 @@ generate_leaflet_detail <- function(data, kennzahl, title, landkreis_highlighted
   
   # Create a color palette for the map:
   if (kennzahl == "delta_7_per_100k") {
-    mypalette <- colorNumeric(c("blue", "green", "red"), -51:51)
+    mypalette <- colorNumeric(c("blue", "green",  "red"), (-max_delta_infections-1):(max_delta_infections+1))
   }else{
-    mypalette <- colorNumeric(c("green", "yellow", "red", "magenta"), 0:51)
+    mypalette <- colorNumeric(c("green", "yellow", "red", "magenta"), 0:(max_infections+1))
   }
   
   labels_normal <- paste(

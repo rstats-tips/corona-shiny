@@ -167,7 +167,8 @@ source("leaflet-functions.R")
     date_of_cache_file(format(file.info(cache_filename)$ctime, format = "%d.%m.%Y, %H:%M"))
     updateSliderInput(session, "date", 
       min = data_landkreise_per_day()$Meldedatum %>% min(),
-      max = data_landkreise_per_day()$Meldedatum %>% max()
+      max = data_landkreise_per_day()$Meldedatum %>% max(),
+      value = data_landkreise_per_day()$Meldedatum %>% max()
     )
     date_of_cache_file(format(file.info(cache_filename)$ctime, format = "%d.%m.%Y, %H:%M"))
     print("Refreshed")

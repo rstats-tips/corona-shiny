@@ -1,6 +1,6 @@
 ---
 title: "Corona in Deutschland im zeitlichen Verlauf auf Landkreis- und Bundeslandebene"
-output: 
+output:
   flexdashboard::flex_dashboard:
     orientation: rows
     vertical_layout: scroll
@@ -29,8 +29,8 @@ max_delta_infections <- 15
 source("preprocess-data.R")
 
 get_landkreis_by_id <- function(IdLandkreis) {
-  landkreise %>% 
-    filter(IdLandkreis == !!IdLandkreis) %>% 
+  landkreise %>%
+    filter(IdLandkreis == !!IdLandkreis) %>%
     pull(Landkreis)
 }
 
@@ -39,11 +39,11 @@ initial_Bundesland <- function(){
 }
 
 initial_Landkreis <- function() {
-  data_landkreise_per_day_initial %>% 
-    ungroup() %>% 
-    filter(Bundesland == initial_Bundesland()) %>% 
-    filter(Meldedatum == max(Meldedatum)) %>% 
-    slice_max(order_by = infected_7_per_100k, n = 1) %>% 
+  data_landkreise_per_day_initial %>%
+    ungroup() %>%
+    filter(Bundesland == initial_Bundesland()) %>%
+    filter(Meldedatum == max(Meldedatum)) %>%
+    slice_max(order_by = infected_7_per_100k, n = 1) %>%
     pull(IdLandkreis)
 }
 
@@ -54,21 +54,21 @@ source("leaflet-functions.R")
 ```{r}
   active_landkreis <- reactiveVal(initial_Landkreis())
   active_bundesland <- reactiveVal(initial_Bundesland())
-  
+
   data_landkreise_per_day <- reactiveVal(data_landkreise_per_day_initial)
   data_bundeslaender_per_day <- reactiveVal(data_bundeslaender_per_day_initial)
   data_germany_per_day <- reactiveVal(data_germany_per_day_initial)
-  
+
   date_of_cache_file <- reactiveVal(
     format(file.info(cache_filename)$ctime, format = "%d.%m.%Y, %H:%M")
   )
-  
+
   date_of_latest_data <- reactive(
-    data_bundeslaender_per_day() %>% 
-      pull(Meldedatum) %>% 
+    data_bundeslaender_per_day() %>%
+      pull(Meldedatum) %>%
       max()
   )
-  
+
   data_show <- reactive({
     data_landkreise_per_day() %>%
       filter(Meldedatum == input$date) %>%
@@ -81,10 +81,10 @@ source("leaflet-functions.R")
     value <- data_show() %>%
       select(-Bundesland) %>%
       arrange(desc(infected_7_per_100k))
-    
+
     value
-  })  
-  
+  })
+
   observeEvent(input$table_of_bundesland_rows_selected, {
       selected_row <- ifelse(!is.null(input$table_of_bundesland_rows_selected),
         input$table_of_bundesland_rows_selected,
@@ -95,84 +95,84 @@ source("leaflet-functions.R")
         pull(IdLandkreis)
       active_landkreis(IdLandkreis)
     }
-  )  
-  
+  )
+
   observeEvent(input$table_of_bundeslaender_rows_selected, {
       selected_row <- ifelse(!is.null(input$table_of_bundeslaender_rows_selected),
         input$table_of_bundeslaender_rows_selected,
         1
       )
       data_bundeslaender_per_day() %>%
-        ungroup() %>% 
-        filter(Meldedatum == input$date) %>% 
+        ungroup() %>%
+        filter(Meldedatum == input$date) %>%
         slice(selected_row) %>%
-        pull(Bundesland) %>% 
+        pull(Bundesland) %>%
         active_bundesland()
     }
-  )  
-  
+  )
+
   observeEvent(input$map_leaflet_shape_click, { # update the location selectInput on map clicks
     IdLandkreis <- input$map_leaflet_shape_click
     active_landkreis(IdLandkreis$id)
-  })  
-  
+  })
+
   observeEvent(input$map_leaflet_delta_shape_click, { # update the location selectInput on map clicks
     IdLandkreis <- input$map_leaflet_delta_shape_click
     active_landkreis(IdLandkreis$id)
   })
-  
-  
+
+
 
   observeEvent(input$map_germany_shape_click, { # update the location selectInput on map clicks
     bundesland_click(input$map_germany_shape_click)
-  }) 
-  
+  })
+
   observeEvent(input$map_germany_detail_shape_click, { # update the location selectInput on map clicks
     bundesland_click(input$map_germany_detail_shape_click)
-  }) 
-    
+  })
+
   observeEvent(input$map_germany_detail_delta_shape_click, { # update the location selectInput on map clicks
    bundesland_click(input$map_germany_detail_delta_shape_click)
-  }) 
+  })
 
-  # Function for all Germany Maps  
+  # Function for all Germany Maps
   bundesland_click <- function(input) {
     Bundesland <- input
       active_bundesland(Bundesland$id)
-      
+
       # set first row to active_landkreis for plot
       active_landkreis(
-        data_show_table() %>% 
+        data_show_table() %>%
           slice(1) %>%
           pull(IdLandkreis)
       )
-  }    
-  
+  }
+
   observeEvent(event_data("plotly_click", source = 'A'), {
     new_date <- data_landkreise_per_day() %>%
-      filter(IdLandkreis == active_landkreis()) %>% 
+      filter(IdLandkreis == active_landkreis()) %>%
       filter(
         row_number() == event_data("plotly_click")$pointNumber + 1
-      ) %>% 
-      pull(Meldedatum) 
+      ) %>%
+      pull(Meldedatum)
 
     updateSliderInput(session, "date", value = as.Date(new_date))
-  })   
-  
+  })
+
   observeEvent(input$refresh_data, {
     date_of_cache_file("Please wait ...")
     data_landkreise_per_day(get_initial_landkreis_data(force_refresh = TRUE))
     data_bundeslaender_per_day(get_initial_bundesland_data(data_landkreise_per_day()))
     data_germany_per_day(get_initial_germany_data(data_bundeslaender_per_day()))
     date_of_cache_file(format(file.info(cache_filename)$ctime, format = "%d.%m.%Y, %H:%M"))
-    updateSliderInput(session, "date", 
+    updateSliderInput(session, "date",
       min = data_landkreise_per_day()$Meldedatum %>% min(),
       max = data_landkreise_per_day()$Meldedatum %>% max(),
       value = data_landkreise_per_day()$Meldedatum %>% max()
     )
     date_of_cache_file(format(file.info(cache_filename)$ctime, format = "%d.%m.%Y, %H:%M"))
     print("Refreshed")
-  })  
+  })
 ```
 
 Sidebar {.sidebar data-width=300}
@@ -225,9 +225,9 @@ Kontakt per E-Mail: rstats.tips@gmail.com
 [Sourcecode auf Github](https://github.com/rstats-tips/corona-shiny)
 
 Landkreise
-=====================================  
+=====================================
 
-Row 
+Row
 -----------------------------------------------------------------------
 ### Anwendungshinweise
 
@@ -237,16 +237,16 @@ das gewählte Bundesland auf Landkreisebene in zwei Grafiken angezeigt.
 Die linke Grafik zeigt die aktuelle Anzahl der Infektionen, die rechte die Änderung
 innerhalb von 7 Tagen.
 
-Per Klick lässt sich ein Landkreis auswählen. Dieser wird dann darunter im 
+Per Klick lässt sich ein Landkreis auswählen. Dieser wird dann darunter im
 zeitlichen Verlauf dargestellt.
 
-Row 
+Row
 -----------------------------------------------------------------------
 
 ### **Anzahl der Infektionen** innerhalb von 7 Tagen pro 100.000 Einwohner in `r renderText({
     paste0(active_bundesland(), " am ", format(input$date, format = "%d.%m.%Y"))
   })`
-  
+
 ```{r}
   leafletOutput("map_leaflet")
   output$map_leaflet <- renderLeaflet({
@@ -260,7 +260,7 @@ Row
 ### **Änderung der Infektionen** innerhalb von 7 Tagen pro 100.000 Einwohner in `r renderText({
     paste0(active_bundesland(), " am ", format(input$date, format = "%d.%m.%Y"))
   })` zu den vorherigen 7 Tagen
-  
+
 ```{r}
   leafletOutput("map_leaflet_delta")
   output$map_leaflet_delta <- renderLeaflet({
@@ -274,23 +274,23 @@ Row
 Row
 -----------------------------------------------------------------------
 
-### `r renderText({ paste0(active_bundesland(), " / ",  get_landkreis_by_id(active_landkreis()), " am ", format(input$date, format = "%d.%m.%Y"))  })`  
+### `r renderText({ paste0(active_bundesland(), " / ",  get_landkreis_by_id(active_landkreis()), " am ", format(input$date, format = "%d.%m.%Y"))  })`
 
 Per Klick auf einen Datenpunkt lässt sich der Zeitpunkt für die Kartendarstellung auswählen.
 
 ```{r}
   plotlyOutput("landkreis_plot")
   output$landkreis_plot <- renderPlotly({
-    data_bundeslaender <- data_bundeslaender_per_day() %>% 
+    data_bundeslaender <- data_bundeslaender_per_day() %>%
       filter(Bundesland == active_bundesland())
-    
+
     gg <- data_landkreise_per_day() %>%
       filter(IdLandkreis == active_landkreis()) %>%
       ggplot(aes(x = Meldedatum, y = infected_7_per_100k)) +
       geom_point(aes(color = infected_7_per_100k)) +
       geom_line(alpha = 0.5, color = "lightGrey", aes(linetype = "Landkreis")) +
-      geom_line(data = data_bundeslaender, alpha = 0.5, color = "blue",  aes(linetype = "Bundesland")) + 
-      geom_line(data = data_germany_per_day(), alpha = 0.5, color = "blue",  aes(linetype = "Deutschland")) + 
+      geom_line(data = data_bundeslaender, alpha = 0.5, color = "blue",  aes(linetype = "Bundesland")) +
+      geom_line(data = data_germany_per_day(), alpha = 0.5, color = "blue",  aes(linetype = "Deutschland")) +
       geom_vline(xintercept = as.numeric(ymd(input$date)), color = "black") +
       geom_vline(xintercept = as.numeric(ymd(input$date) - days(7)), color = "grey") +
       scale_color_gradient2(midpoint = 15, low = "green", mid = "yellow",
@@ -304,9 +304,9 @@ Per Klick auf einen Datenpunkt lässt sich der Zeitpunkt für die Kartendarstell
       ) +
       theme_bw()
 
-    gg <- ggplotly(gg, source = 'A') %>% 
+    gg <- ggplotly(gg, source = 'A') %>%
       event_register("plotly_click")
-    
+
     gg
   })
 ```
@@ -324,16 +324,16 @@ Suche und wähle eine Landkreis zur Detaildarstellung per Klick aus.
 DTOutput("table_of_bundesland")
 output$table_of_bundesland <-renderDT(
     {
-      data_show_table() %>% 
-        select(-infected, -infected_7, -delta_7, -infected_7_before, 
+      data_show_table() %>%
+        select(-infected, -infected_7, -delta_7, -infected_7_before,
                -IdLandkreis, -ends_with("_fill"))
     },
     server = TRUE,
     # selection = "single",
     selection = list(mode = 'single', selected = c(
-      data_show_table() %>% 
+      data_show_table() %>%
         mutate(row = row_number()) %>%
-        filter(IdLandkreis == active_landkreis()) %>% 
+        filter(IdLandkreis == active_landkreis()) %>%
         pull(row)
         )
       )
@@ -341,14 +341,14 @@ output$table_of_bundesland <-renderDT(
 ```
 
 Bundesländer
-=====================================  
+=====================================
 
-Row 
+Row
 ---------------------------------
 
 ### **Anzahl der Infektionen** innerhalb von 7 Tagen pro 100.000 Einwohner am `r renderText({    paste0(format(input$date, format = "%d.%m.%Y"))
-  })` 
-  
+  })`
+
 ```{r}
   leafletOutput("map_germany_detail")
   output$map_germany_detail <- renderLeaflet({
@@ -364,7 +364,7 @@ Row
 ### **Änderung der Infektionen** innerhalb von 7 Tagen pro 100.000 Einwohner am `r renderText({
     paste0(format(input$date, format = "%d.%m.%Y"))
   })` zu den vorherigen 7 Tagen
-  
+
 ```{r}
   leafletOutput("map_germany_detail_delta")
   output$map_germany_detail_delta <- renderLeaflet({
@@ -377,10 +377,10 @@ Row
   })
 ```
 
-Row 
+Row
 ---------------------------------
 
-### `r renderText({ paste0(active_bundesland(), " am ", format(input$date, format = "%d.%m.%Y"))  })`  
+### `r renderText({ paste0(active_bundesland(), " am ", format(input$date, format = "%d.%m.%Y"))  })`
 
 
 ```{r}
@@ -391,7 +391,7 @@ Row
       ggplot(aes(x = Meldedatum, y = infected_7_per_100k)) +
       geom_point(aes(color = infected_7_per_100k)) +
       geom_line(alpha = 0.5, color = "lightGrey", aes(linetype = "Bundesland")) +
-      geom_line(data = data_germany_per_day(), alpha = 0.5, color = "blue",  aes(linetype = "Deutschland")) + 
+      geom_line(data = data_germany_per_day(), alpha = 0.5, color = "blue",  aes(linetype = "Deutschland")) +
       geom_vline(xintercept = as.numeric(ymd(input$date)), color = "black") +
       geom_vline(xintercept = as.numeric(ymd(input$date) - days(7)), color = "grey") +
       scale_color_gradient2(midpoint = 15, low = "green", mid = "yellow",
@@ -405,14 +405,14 @@ Row
       ) +
       theme_bw()
 
-    gg <- ggplotly(gg, source = 'A') %>% 
+    gg <- ggplotly(gg, source = 'A') %>%
       event_register("plotly_click")
-    
+
     gg
   })
 ```
 
-Row 
+Row
 ---------------------------------
 
 ### Liste der Bundesländer am `r renderText({format(input$date, format = "%d.%m.%Y")})`
@@ -425,35 +425,35 @@ DTOutput("table_of_bundeslaender")
 output$table_of_bundeslaender <-renderDT(
     {
       data_bundeslaender_per_day() %>%
-      filter(Meldedatum == input$date) %>% 
-        select(-infected, -infected_7, -delta_7, -infected_7_before, 
+      filter(Meldedatum == input$date) %>%
+        select(-infected, -infected_7, -delta_7, -infected_7_before,
                 -ends_with("_fill"))
     },
     server = TRUE,
     selection = list(mode = 'single', selected = c(
       data_bundeslaender_per_day() %>%
-        ungroup() %>% 
-        filter(Meldedatum == input$date) %>% 
+        ungroup() %>%
+        filter(Meldedatum == input$date) %>%
         mutate(row = row_number()) %>%
-        filter(Bundesland == active_bundesland()) %>% 
+        filter(Bundesland == active_bundesland()) %>%
         pull(row)
         )
-      )    
+      )
   )
 ```
 
 Detailansicht
-=====================================  
+=====================================
 
 Row {data-height=800}
 ---------------------------------
 
-  
+
 ```{r}
   leafletOutput("map_leaflet_detail", height = "800")
   output$map_leaflet_detail <- renderLeaflet({
     gg <-  data_landkreise_per_day() %>%
-      filter(Meldedatum == input$date) %>% 
+      filter(Meldedatum == input$date) %>%
       generate_leaflet_detail("infected_7_per_100k", "Inf. pro 100k", active_landkreis())
 
     gg
@@ -468,19 +468,26 @@ DTOutput("table_of_germany")
 output$table_of_germany <-renderDT(
     {
       data_landkreise_per_day() %>%
-      filter(Meldedatum == input$date) %>% 
-        arrange(desc(infected_7_per_100k), desc(delta_7_per_100k)) %>% 
-        select(-infected, -infected_7, -delta_7, -infected_7_before, 
+      filter(Meldedatum == input$date) %>%
+        arrange(desc(infected_7_per_100k), desc(delta_7_per_100k)) %>%
+        select(-infected, -infected_7, -delta_7, -infected_7_before,
                -IdLandkreis, -ends_with("_fill"))
     },
     server = TRUE,
     # selection = "single",
     # selection = list(mode = 'single', selected = c(
-    #   data_show_table() %>% 
+    #   data_show_table() %>%
     #     mutate(row = row_number()) %>%
-    #     filter(IdLandkreis == active_landkreis()) %>% 
+    #     filter(IdLandkreis == active_landkreis()) %>%
     #     pull(row)
     #     )
     #   )
   )
+```
+
+Runtime - SessionInformation
+=======================
+
+```{r}
+sessionInfo()
 ```

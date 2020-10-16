@@ -1,5 +1,5 @@
 ---
-title: "Corona in Deutschland im zeitlichen Verlauf auf Landkreis- und Bundeslandebene"
+title: "Corona Dashboard"
 output:
   flexdashboard::flex_dashboard:
     orientation: rows
@@ -178,29 +178,39 @@ source("leaflet-functions.R")
 Sidebar {.sidebar data-width=300}
 ====================================================================
 
-### Bundesland wählen
 ```{r}
-  leafletOutput("map_germany")
+  fillCol(height = "300", flex = c(NA, NA, 1),
+          
+          inputPanel(sliderInput("date",
+            "Datum:",
+            min = data_landkreise_per_day_initial$Meldedatum %>% min(),
+            max = data_landkreise_per_day_initial$Meldedatum %>% max(),
+            value = data_landkreise_per_day_initial$Meldedatum %>% max()
+          )),
+          textOutput("title_bundesland"),
+          leafletOutput("map_germany", height = "150")
+         )
+  
+  output$title_bundesland <- renderText("Bundesland wählen")
   output$map_germany <- renderLeaflet({
     gg <- data_bundeslaender_per_day() %>%
       filter(Meldedatum == input$date) %>%
-      generate_leaflet_germany("infected_7_per_100k", "Inf. pro 100k")
+      generate_leaflet_germany("infected_7_per_100k", title = "Bundesland wählen")
 
     gg
   })
-
-  sliderInput("date",
-    "Datum:",
-    min = data_landkreise_per_day_initial$Meldedatum %>% min(),
-    max = data_landkreise_per_day_initial$Meldedatum %>% max(),
-    value = data_landkreise_per_day_initial$Meldedatum %>% max()
-  )
+tags$br()
+  
 ```
 
-### Letztes Datenupdate
+
 ```{r}
-  renderText(paste0("aktualisiert: ", date_of_cache_file()))
-  renderText(paste0("Daten bis: ", date_of_latest_data() %>%
+fillCol(height = "100", flex = c(NA, 1),
+        textOutput('aktualisiert'),
+        textOutput('datenstand')
+        )
+  output$aktualisiert <- renderText(paste0("aktualisiert: ", date_of_cache_file()))
+  output$datenstand <- renderText(paste0("Daten bis: ", date_of_latest_data() %>%
                       format(format = "%d.%m.%Y")
                     )
              )
@@ -211,7 +221,6 @@ Sidebar {.sidebar data-width=300}
 ```
 
 
-### Infos
 
 Zur Darstellung werden Daten des [RKI](https://opendata.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0.csv) genutzt.
 Fehler in der Auswertung gehen zu meinen Lasten.

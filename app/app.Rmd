@@ -216,7 +216,7 @@ Sidebar {.sidebar data-width=300}
 Zur Darstellung werden Daten des [RKI](https://opendata.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0.csv) genutzt.
 Fehler in der Auswertung gehen zu meinen Lasten.
 
-Bevölkerungsdaten entnehme ich den Daten von [Pavel Mayer](https://pavelmayer.de/covid/risks/#tabletop).
+Bevölkerungsdaten entnehme ich den Daten des [RKI](https://opendata.arcgis.com/datasets/917fc37a709542548cc3be077a786c17_0.csv).
 
 [Mehr Infos zur App in meinem Blog](https://www.rstats-tips.net/2020/09/08/shiny-app-to-explore-covid-19-in-germany/)
 

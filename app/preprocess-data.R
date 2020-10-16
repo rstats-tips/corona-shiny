@@ -3,28 +3,11 @@ cache_filename <- "raw-data.Rda"
 get_meta_data_landkreise <- function(force = FALSE) {
   landkreise_meta_filename <- "landkreise_meta.Rda"
   if(!file.exists(landkreise_meta_filename) | force) {
-    url_landkreise_full <- "https://pavelmayer.de/covid/risks/full-data.csv"
-    data_landkreise_detail <- read_csv(url_landkreise_full, col_types = cols(
-      Bundesland = col_character(),
-      Landkreis = col_character(),
-      Altersgruppe = col_character(),
-      Geschlecht = col_character(),
-      IdLandkreis = col_character(),
-      Datenstand = col_character(),
-      Altersgruppe2 = col_character(),
-      LandkreisName = col_character(),
-      LandkreisTyp = col_character(),
-      NeuerFallKlar = col_character(),
-      RefdatumKlar = col_character(),
-      MeldedatumKlar = col_character(),
-      NeuerTodesfallKlar = col_character(),
-      missingSinceDay = col_integer(),
-      missingCasesInOldRecord = col_integer(),
-      poppedUpOnDay = col_integer()
-    ))
+    url_landkreise_full <- "https://opendata.arcgis.com/datasets/917fc37a709542548cc3be077a786c17_0.csv"
+    data_landkreise_detail <- read_csv(url_landkreise_full)
     
     landkreise <- data_landkreise_detail %>% 
-      select(Landkreis, IdLandkreis, Bevoelkerung, Bundesland) %>%
+      select(Landkreis = county, IdLandkreis = AGS, Bevoelkerung = EWZ, Bundesland = BL) %>%
       unique()
     save(landkreise, file = landkreise_meta_filename)
   } else {

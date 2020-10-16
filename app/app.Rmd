@@ -485,9 +485,3 @@ output$table_of_germany <-renderDT(
   )
 ```
 
-#Runtime - SessionInformation
-#=======================
-#
-#```{r}
-#sessionInfo()
-#```

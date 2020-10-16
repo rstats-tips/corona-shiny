@@ -7,7 +7,7 @@ get_meta_data_landkreise <- function(force = FALSE) {
     data_landkreise_detail <- read_csv(url_landkreise_full)
     
     landkreise <- data_landkreise_detail %>% 
-      select(Landkreis = county, IdLandkreis = AGS, Bevoelkerung = EWZ, Bundesland = BL) %>%
+      select(Landkreis = county, IdLandkreis = RS, Bevoelkerung = EWZ, Bundesland = BL) %>%
       unique()
     save(landkreise, file = landkreise_meta_filename)
   } else {

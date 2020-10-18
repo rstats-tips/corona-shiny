@@ -7,11 +7,9 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
     libxml2-dev \
     libcairo2-dev \
     libsqlite3-dev \
-#    libmariadbd-dev \
     libpq-dev \
     libssh2-1-dev \
     unixodbc-dev \
-#    libcurl4-openssl-dev \
     r-cran-v8 \
     libv8-dev \
     net-tools \

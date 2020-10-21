@@ -205,15 +205,20 @@ tags$br()
 
 
 ```{r}
-fillCol(height = "100", flex = c(NA, 1),
+fillCol(height = "150", flex = c(NA, 1, 1),
         textOutput('aktualisiert'),
-        textOutput('datenstand')
+        textOutput('datenstand'),
+        textOutput('fehlende_Daten')
         )
   output$aktualisiert <- renderText(paste0("aktualisiert: ", date_of_cache_file()))
   output$datenstand <- renderText(paste0("Daten bis: ", date_of_latest_data() %>%
                       format(format = "%d.%m.%Y")
                     )
              )
+  output$fehlende_Daten <- renderText(ifelse(landkreise %>% nrow() == 
+  data_landkreise_per_day_initial %>% pull(Landkreis) %>% unique() %>% length(), "", 
+  "Leider liefert das RKI in letzter Zeit teilweise unvollständige Daten, so dass 
+  Landkreise komplett fehlen."))
 
   if(Sys.getenv("R_CONFIG_ACTIVE") != "shinyapps") {
     actionButton("refresh_data", "Daten aktualisieren")

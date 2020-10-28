@@ -43,7 +43,8 @@ get_initial_landkreis_data <- function(force_refresh = FALSE) {
   
   if(force_refresh) {
     Sys.setlocale(category = "LC_ALL", locale = "de_DE.UTF-8")
-    url_rki <- "https://opendata.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0.csv"
+    # url_rki <- "https://opendata.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0.csv"
+    url_rki <- "https://www.arcgis.com/sharing/rest/content/items/f10774f1c63e40168479a1feb6c7ca74/data"
     data_landkreise_detail_converted <- read_csv(url_rki) %>%
       mutate(
         Meldedatum = as.Date(

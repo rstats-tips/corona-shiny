@@ -59,7 +59,8 @@ get_initial_landkreis_data <- function(force_refresh = FALSE) {
   
   data_landkreise_per_day <- data_landkreise_detail_converted %>%
     filter(NeuerFall %in% c(1, 0)) %>%
-    complete(Meldedatum, IdLandkreis, fill = list(AnzahlFall = 0, NeuerFall = 1)) %>%
+    complete(Meldedatum = seq(min(Meldedatum), max(Meldedatum), by = "day"), 
+             IdLandkreis, fill = list(AnzahlFall = 0, NeuerFall = 1)) %>%
     group_by(IdLandkreis, Meldedatum) %>%
     summarize(
       infected = sum(AnzahlFall)

@@ -166,11 +166,12 @@ bundeslaender_geo <- geojson_read("bundesland.geojson",
 )
 
 # https://public.opendatasoft.com/explore/dataset/landkreise-in-germany/download/?format=geojson&timezone=Europe/Berlin&lang=en
-landkreise_geo <- geojson_read("landkreise-in-germany.geojson",
+landkreise_geo <- geojson_read("landkreise_simplify200.geojson",
                                what = "sp"
 )
 
 landkreise_geo@data <- landkreise_geo@data %>%
+  rename(cca_2 = AGS) %>% 
   mutate(
     cca_2 = if_else(cca_2 == "03152", "03159", cca_2), # fix for Göttingen
     cca_2 = if_else(cca_2 == "03156", "03159", cca_2) # fix for Göttingen

@@ -354,6 +354,20 @@ output$table_of_bundesland <-renderDT(
   )
 ```
 
+### Zeitlicherverlauf für `r renderText(get_landkreis_by_id(active_landkreis()))`
+```{r}
+DTOutput("table_of_landkreis")
+output$table_of_landkreis <-renderDT(
+    {
+      data_landkreise_per_day() %>%
+        filter(IdLandkreis == active_landkreis()) %>%
+        ungroup() %>% 
+        select(Meldedatum, infected, infected_7_per_100k, delta_7_per_100k) %>% 
+        arrange(desc(Meldedatum))
+    }
+  )
+```
+
 Bundesländer
 =====================================
 

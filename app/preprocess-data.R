@@ -59,6 +59,7 @@ get_initial_landkreis_data <- function(force_refresh = FALSE) {
   }
   
   data_landkreise_per_day <- data_landkreise_detail_converted %>%
+    mutate(IdLandkreis = if_else(IdLandkreis == "05354", "05334", IdLandkreis)) %>% # LK Aachen
     filter(NeuerFall %in% c(1, 0)) %>%
     complete(Meldedatum = seq(min(Meldedatum), max(Meldedatum), by = "day"), 
              IdLandkreis, fill = list(AnzahlFall = 0, NeuerFall = 1)) %>%

@@ -23,7 +23,7 @@ library(leaflet)
 library(geojsonio)
 
 # Maximum values for plotting
-max_infections <- 50
+max_infections <- 200
 max_delta_infections <- 15
 
 source("preprocess-data.R")
@@ -307,8 +307,9 @@ Per Klick auf einen Datenpunkt lässt sich der Zeitpunkt für die Kartendarstell
       geom_line(data = data_germany_per_day(), alpha = 0.5, color = "blue",  aes(linetype = "Deutschland")) +
       geom_vline(xintercept = as.numeric(ymd(input$date)), color = "black") +
       geom_vline(xintercept = as.numeric(ymd(input$date) - days(7)), color = "grey") +
-      scale_color_gradient2(midpoint = 15, low = "green", mid = "yellow",
-                           high = "red", space = "Lab", limits=c(0, 50), oob=squish,
+      scale_color_gradientn(colors = c("green", "yellow", "red", "magenta", "black"),
+                            values = c(0, 25, 50, 100, 200)/max_infections,
+                            limits=c(0, max_infections), oob=squish,
                            name = NULL, guide = FALSE) +
       scale_linetype_manual(values=c("dotted", "dotdash", "solid"), name = NULL) +
       labs(
@@ -425,8 +426,9 @@ Row
       geom_line(data = data_germany_per_day(), alpha = 0.5, color = "blue",  aes(linetype = "Deutschland")) +
       geom_vline(xintercept = as.numeric(ymd(input$date)), color = "black") +
       geom_vline(xintercept = as.numeric(ymd(input$date) - days(7)), color = "grey") +
-      scale_color_gradient2(midpoint = 15, low = "green", mid = "yellow",
-                           high = "red", space = "Lab", limits=c(0, 50), oob=squish,
+      scale_color_gradientn(colors = c("green", "yellow", "red", "magenta", "black"),
+                            values = c(0, 25, 50, 100, 200)/max_infections,
+                            limits=c(0, max_infections), oob=squish,
                            name = NULL, guide = FALSE) +
       scale_linetype_manual(values=c("dotted", "dotdash"), name = NULL) +
       labs(

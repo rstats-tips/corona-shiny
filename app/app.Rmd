@@ -345,10 +345,7 @@ output$table_of_bundesland <-renderDT(
     {
       data_show_table() %>%
         select(-infected, -infected_7, -delta_7, -infected_7_before,
-               -IdLandkreis, -ends_with("_fill")) %>% 
-        mutate(
-          R = round(infected_7_per_100k / (infected_7_per_100k - delta_7_per_100k), 2)
-        ) 
+               -IdLandkreis, -ends_with("_fill"))
       
       
     },
@@ -375,10 +372,7 @@ output$table_of_landkreis <-renderDT(
       data_landkreise_per_day() %>%
         filter(IdLandkreis == active_landkreis()) %>%
         ungroup() %>% 
-        select(Meldedatum, infected, infected_7_per_100k, delta_7_per_100k) %>% 
-        mutate(
-          R = round(infected_7_per_100k / (infected_7_per_100k - delta_7_per_100k), 2)
-        ) %>% 
+        select(Meldedatum, infected, infected_7_per_100k, delta_7_per_100k, R) %>% 
         arrange(desc(Meldedatum))
     }
   )
@@ -472,10 +466,7 @@ output$table_of_bundeslaender <-renderDT(
       data_bundeslaender_per_day() %>%
       filter(Meldedatum == date()) %>%
         select(-infected, -infected_7, -delta_7, -infected_7_before,
-                -ends_with("_fill")) %>% 
-        mutate(
-          R = round(infected_7_per_100k / (infected_7_per_100k - delta_7_per_100k), 2)
-        )         
+                -ends_with("_fill")) 
     },
     server = TRUE,
     selection = list(mode = 'single', selected = c(
@@ -519,10 +510,7 @@ output$table_of_germany <-renderDT(
       filter(Meldedatum == date()) %>%
         arrange(desc(infected_7_per_100k), desc(delta_7_per_100k)) %>%
         select(-infected, -infected_7, -delta_7, -infected_7_before,
-               -IdLandkreis, -ends_with("_fill")) %>% 
-        mutate(
-          R = round(infected_7_per_100k / (infected_7_per_100k - delta_7_per_100k), 2)
-        )         
+               -IdLandkreis, -ends_with("_fill"))
     },
     server = TRUE,
     # selection = "single",

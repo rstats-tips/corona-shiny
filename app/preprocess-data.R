@@ -80,7 +80,8 @@ get_initial_landkreis_data <- function(force_refresh = FALSE) {
     left_join(landkreise) %>% 
     mutate(
       infected_7_per_100k = round(infected_7 / Bevoelkerung * 100000, 1),
-      delta_7_per_100k = round(delta_7 / Bevoelkerung * 100000, 1)
+      delta_7_per_100k = round(delta_7 / Bevoelkerung * 100000, 1),
+      R = round(infected_7_per_100k / (infected_7_per_100k - delta_7_per_100k), 2)
     ) %>%
     mutate(
       infected_7_per_100k_fill = if_else(infected_7_per_100k < 0, 0, infected_7_per_100k),
@@ -109,7 +110,8 @@ get_initial_bundesland_data <- function(data_landkreise_per_day){
     ) %>%
     mutate(
       infected_7_per_100k = round(infected_7 / Bevoelkerung * 100000, 1),
-      delta_7_per_100k = round(delta_7 / Bevoelkerung * 100000, 1)
+      delta_7_per_100k = round(delta_7 / Bevoelkerung * 100000, 1),
+      R = round(infected_7_per_100k / (infected_7_per_100k - delta_7_per_100k), 2)
     ) %>%
     mutate(
       infected_7_per_100k_fill = if_else(infected_7_per_100k < 0, 0, infected_7_per_100k),

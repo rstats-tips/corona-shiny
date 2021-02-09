@@ -275,15 +275,17 @@ Row
   })
 ```
 
-### **Änderung der Infektionen** innerhalb von 7 Tagen pro 100.000 Einwohner in `r renderText({
+### **R** in `r renderText({
     paste0(active_bundesland(), " am ", format(date(), format = "%d.%m.%Y"))
-  })` zu den vorherigen 7 Tagen
+  })`
 
 ```{r}
   leafletOutput("map_leaflet_delta")
   output$map_leaflet_delta <- renderLeaflet({
+    # gg <- data_show() %>%
+    #   generate_leaflet("delta_7_per_100k", "Delta Inf. pro 100k", active_landkreis())
     gg <- data_show() %>%
-      generate_leaflet("delta_7_per_100k", "Delta Inf. pro 100k", active_landkreis())
+      generate_leaflet("R", "R", active_landkreis())
 
     gg
   })
@@ -399,18 +401,21 @@ Row
   })
 ```
 
-### **Änderung der Infektionen** innerhalb von 7 Tagen pro 100.000 Einwohner am `r renderText({
+### **R**  am `r renderText({
     paste0(format(date(), format = "%d.%m.%Y"))
-  })` zu den vorherigen 7 Tagen
+  })` 
 
 ```{r}
   leafletOutput("map_germany_detail_delta")
   output$map_germany_detail_delta <- renderLeaflet({
+    # gg <- data_bundeslaender_per_day() %>%
+    #   filter(Meldedatum == date()) %>%
+    #   generate_leaflet_germany("delta_7_per_100k", "Delta Inf. pro 100k",
+    #                            legend = TRUE)
     gg <- data_bundeslaender_per_day() %>%
       filter(Meldedatum == date()) %>%
-      generate_leaflet_germany("delta_7_per_100k", "Delta Inf. pro 100k",
+      generate_leaflet_germany("R", "R",
                                legend = TRUE)
-
     gg
   })
 ```

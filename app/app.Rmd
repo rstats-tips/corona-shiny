@@ -25,6 +25,7 @@ library(geojsonio)
 # Maximum values for plotting
 max_infections <- 200
 max_delta_infections <- 15
+max_R <- 2
 
 source("preprocess-data.R")
 

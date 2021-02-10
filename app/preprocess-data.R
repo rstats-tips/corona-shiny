@@ -88,7 +88,7 @@ get_initial_landkreis_data <- function(force_refresh = FALSE) {
       infected_7_per_100k_fill = if_else(infected_7_per_100k > max_infections, max_infections + 1, infected_7_per_100k_fill),
       delta_7_per_100k_fill = if_else(delta_7_per_100k > max_delta_infections, max_delta_infections + 1, delta_7_per_100k),
       delta_7_per_100k_fill = if_else(delta_7_per_100k < -max_delta_infections, -max_delta_infections - 1, delta_7_per_100k_fill),
-      R_fill = R
+      R_fill = if_else(R < max_R, R, max_R)
     )
   return(data_landkreise_per_day)
 }
@@ -119,7 +119,7 @@ get_initial_bundesland_data <- function(data_landkreise_per_day){
       infected_7_per_100k_fill = if_else(infected_7_per_100k > max_infections, max_infections + 1, infected_7_per_100k_fill),
       delta_7_per_100k_fill = if_else(delta_7_per_100k > max_delta_infections, max_delta_infections + 1, delta_7_per_100k),
       delta_7_per_100k_fill = if_else(delta_7_per_100k < -max_delta_infections, -max_delta_infections - 1, delta_7_per_100k_fill),
-      R_fill = R
+      R_fill = if_else(R < max_R, R, max_R)
     )
   return(data_bundeslaender_per_day)
 }
@@ -149,7 +149,7 @@ get_initial_germany_data <- function(data_bundeslaender_per_day) {
       infected_7_per_100k_fill = if_else(infected_7_per_100k > max_infections, max_infections + 1, infected_7_per_100k_fill),
       delta_7_per_100k_fill = if_else(delta_7_per_100k > max_delta_infections, max_delta_infections + 1, delta_7_per_100k),
       delta_7_per_100k_fill = if_else(delta_7_per_100k < -max_delta_infections, -max_delta_infections - 1, delta_7_per_100k_fill),
-      R_fill = R
+      R_fill = if_else(R < max_R, R, max_R)
     )
   return(data_germany_per_day)
 }

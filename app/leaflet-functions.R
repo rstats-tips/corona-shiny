@@ -4,7 +4,8 @@ generate_leaflet <- function(data, kennzahl, title, landkreis_highlighted = NA) 
   landkreise_geo@data <- landkreise_geo@data %>%
     right_join(data %>% select(IdLandkreis, Landkreis, 
                                infected_7_per_100k,  infected_7_per_100k_fill, 
-                               delta_7_per_100k, delta_7_per_100k_fill, R_fill), 
+                               delta_7_per_100k, delta_7_per_100k_fill, 
+                               R, R_fill), 
                by = c("cca_2" = "IdLandkreis"))
   
   landkreise_geo@data <- landkreise_geo@data %>% 
@@ -16,7 +17,7 @@ generate_leaflet <- function(data, kennzahl, title, landkreis_highlighted = NA) 
   
   # Create a color palette for the map:
   if (kennzahl == "R") {
-    mypalette <- colorNumeric(c("green", "red"),(0:2))
+    mypalette <- colorNumeric(c("green", "white", "red"),(0:max_R))
   } else if (kennzahl == "delta_7_per_100k") {
     mypalette <- colorNumeric(c("blue", "green",  "red"), (-max_delta_infections-1):(max_delta_infections+1))
   } else{
@@ -79,7 +80,8 @@ generate_leaflet_germany <- function(data, kennzahl, title, legend = FALSE) {
   bundeslaender_geo@data <- bundeslaender_geo@data %>%
     left_join(data %>% select(Bundesland,
                               infected_7_per_100k,  infected_7_per_100k_fill,
-                              delta_7_per_100k, delta_7_per_100k_fill, R_fill),
+                              delta_7_per_100k, delta_7_per_100k_fill, 
+                              R, R_fill),
               by = c("gen" = "Bundesland"))
   
   bundeslaender_geo@data <- bundeslaender_geo@data %>%
@@ -89,7 +91,7 @@ generate_leaflet_germany <- function(data, kennzahl, title, legend = FALSE) {
   
   # Create a color palette for the map:
   if (kennzahl == "R") {
-    mypalette <- colorNumeric(c("green", "red"),(0.5:1.5))
+    mypalette <- colorNumeric(c("green", "white", "red"),(0:max_R))
   } else if (kennzahl == "delta_7_per_100k") {
     mypalette <- colorNumeric(c("blue", "green",  "red"), (-max_delta_infections-1):(max_delta_infections+1))
   }else{

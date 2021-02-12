@@ -493,6 +493,9 @@ Detailansicht
 Row {data-height=800}
 ---------------------------------
 
+### **Anzahl der Infektionen** innerhalb von 7 Tagen pro 100.000 Einwohner am `r renderText({    paste0(format(date(), format = "%d.%m.%Y"))
+  })`
+  
 
 ```{r}
   leafletOutput("map_leaflet_detail", height = "800")
@@ -505,8 +508,24 @@ Row {data-height=800}
   })
 ```
 
+### **R**  am `r renderText({
+    paste0(format(date(), format = "%d.%m.%Y"))
+  })` 
+
+```{r}
+  leafletOutput("map_leaflet_detail_R", height = "800")
+  output$map_leaflet_detail_R <- renderLeaflet({
+    gg <-  data_landkreise_per_day() %>%
+      filter(Meldedatum == date()) %>%
+      generate_leaflet_detail("R", "R", active_landkreis())
+
+    gg
+  })
+```
+
 Row
 ---------------------------------------
+
 
 ```{r}
 DTOutput("table_of_germany")

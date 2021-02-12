@@ -139,7 +139,8 @@ generate_leaflet_detail <- function(data, kennzahl, title, landkreis_highlighted
   landkreise_geo@data <-landkreise_geo@data %>%
     right_join(data %>% select(IdLandkreis, Landkreis, 
                                infected_7_per_100k,  infected_7_per_100k_fill, 
-                               delta_7_per_100k, delta_7_per_100k_fill), 
+                               delta_7_per_100k, delta_7_per_100k_fill,
+                               R, R_fill), 
                by = c("cca_2" = "IdLandkreis"))
   
   landkreise_geo@data <- landkreise_geo@data %>% 
@@ -150,7 +151,9 @@ generate_leaflet_detail <- function(data, kennzahl, title, landkreis_highlighted
   landkreis_highlighted_geo <- subset(landkreise_geo, cca_2 %in% landkreis_highlighted)
   
   # Create a color palette for the map:
-  if (kennzahl == "delta_7_per_100k") {
+  if (kennzahl == "R") {
+    mypalette <- colorNumeric(c("green", "white", "red"),(0:max_R))
+  } else if (kennzahl == "delta_7_per_100k") {
     mypalette <- colorNumeric(c("blue", "green",  "red"), (-max_delta_infections-1):(max_delta_infections+1))
   }else{
     mypalette <- colorNumeric(c("green", "yellow", "red", "magenta", "black"), 0:(max_infections+1))
@@ -159,7 +162,8 @@ generate_leaflet_detail <- function(data, kennzahl, title, landkreis_highlighted
   labels_normal <- paste(
     "Landkreis: ", landkreise_geo@data$Landkreis, "<br/>",
     "Infizierte(7) pro 100k: ", landkreise_geo@data$infected_7_per_100k, "<br/>",
-    "Delta in 7 Tagen Infizierte(7) pro 100k: ", landkreise_geo@data$delta_7_per_100k,
+    "Delta in 7 Tagen Infizierte(7) pro 100k: ", landkreise_geo@data$delta_7_per_100k, "<br/>",
+    "R: ", landkreise_geo@data$R,
     sep = ""
   ) %>%
     lapply(htmltools::HTML)
@@ -167,7 +171,8 @@ generate_leaflet_detail <- function(data, kennzahl, title, landkreis_highlighted
   labels_highlighted <- paste(
     "Landkreis: ", landkreis_highlighted_geo@data$Landkreis, "<br/>",
     "Infizierte(7) pro 100k: ", landkreis_highlighted_geo@data$infected_7_per_100k, "<br/>",
-    "Delta in 7 Tagen Infizierte(7) pro 100k: ", landkreis_highlighted_geo@data$delta_7_per_100k,
+    "Delta in 7 Tagen Infizierte(7) pro 100k: ", landkreis_highlighted_geo@data$delta_7_per_100k, "<br/>",
+    "R: ", landkreis_highlighted_geo@data$R,
     sep = ""
   ) %>%
     lapply(htmltools::HTML)

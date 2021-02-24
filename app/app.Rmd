@@ -430,7 +430,7 @@ output$table_of_bundesland <-renderDT(
 Row
 -----------------------------------------------------------------------
 
-### Zeitlicherverlauf für `r renderText(get_landkreis_by_id(active_landkreis()))`
+### Zeitlicher Verlauf für `r renderText(get_landkreis_by_id(active_landkreis()))`
 ```{r}
 DTOutput("table_of_landkreis")
 output$table_of_landkreis <-renderDT(

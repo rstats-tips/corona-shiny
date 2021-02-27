@@ -15,10 +15,11 @@ This app is hosted at https://rstats-tips.net/_shiny/corona/
 
 ### Docker
 Given a Docker installation you can run
-`docker run -d --rm  corona-shiny` to build a Docker image. 
+`docker run -d --rm  corona-shiny` to build a Docker image.
 To run this image use `docker run -d --rm -p 3838:3838 corona-shiny`.
 Now you can access the shiny app by pointing your browser to http://localhost:3838
 
+To rebuild container run `docker build   -t corona-shiny .`
 
 ## More information
 You can find more information about this shiny app at my blogpost at

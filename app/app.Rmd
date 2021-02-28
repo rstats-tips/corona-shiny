@@ -493,6 +493,32 @@ Row
 ```{r}
   plotlyOutput("bundesland_plot")
   output$bundesland_plot <- renderPlotly({
+    
+    prediction <- data_bundeslaender_per_day() %>%
+      filter(Bundesland == active_bundesland()) %>%
+      filter(Meldedatum >= max(Meldedatum) - days(7))
+    
+    last_date <- prediction$Meldedatum %>% max()
+    R_max <- prediction$R %>% max()
+    R_min <- prediction$R %>% min()
+    infections <- prediction %>% 
+      filter(Meldedatum == max(Meldedatum)) %>% 
+      pull(infected_7_per_100k)
+    
+    length_of_prediction <- 5
+    prediction_dates <- seq.Date(from = last_date, by = "week", length.out = length_of_prediction)
+    
+    prediction <- tibble(
+      Meldedatum = prediction_dates,
+      Wochen = seq(1:length_of_prediction) - 1
+    ) %>%
+      rowwise() %>%
+      mutate(
+        infections_min = infections * R_min ^ Wochen,
+        infections_max = infections * R_max ^ Wochen,
+        infected_7_per_100k = infections
+      )
+    
     gg <- data_bundeslaender_per_day() %>%
       filter(Bundesland == active_bundesland()) %>%
       ggplot(aes(x = Meldedatum, y = infected_7_per_100k)) +
@@ -501,6 +527,9 @@ Row
       geom_line(data = data_germany_per_day(), alpha = 0.5, color = "blue",  aes(linetype = "Deutschland")) +
       geom_vline(xintercept = as.numeric(ymd(date())), color = "black") +
       geom_vline(xintercept = as.numeric(ymd(date()) - days(7)), color = "grey") +
+      
+      geom_ribbon(data = prediction, aes(x = Meldedatum, ymin = infections_min, ymax = infections_max), fill = "grey90") +
+      
       scale_color_gradientn(colors = c("green", "yellow", "red", "magenta", "black"),
                             values = c(0, 25, 50, 100, 200)/max_infections,
                             limits=c(0, max_infections), oob=squish,

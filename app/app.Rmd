@@ -362,6 +362,9 @@ Per Klick auf einen Datenpunkt lässt sich der Zeitpunkt für die Kartendarstell
 
 Row
 ---------------------------------
+
+### 7-Tage R-Wert, die Farbe zeigt die Inzidenz an.
+
 ```{r}
   plotlyOutput("landkreis_R_plot")
   output$landkreis_R_plot <- renderPlotly({
@@ -371,16 +374,18 @@ Row
     gg <- data_landkreise_per_day() %>%
       filter(IdLandkreis == active_landkreis()) %>%
       ggplot(aes(x = Meldedatum, y = R)) +
-      # geom_point(aes(color = R)) +
-      geom_line(alpha = 1, color = "black", aes(linetype = "Landkreis")) +
+      geom_point(aes(color = infected_7_per_100k)) +
+      geom_line(alpha = 1, color = "grey70", aes(linetype = "Landkreis")) +
       geom_line(data = data_bundeslaender, alpha = 0.5, color = "blue",  aes(linetype = "Bundesland")) +
       geom_line(data = data_germany_per_day(), alpha = 0.5, color = "blue",  aes(linetype = "Deutschland")) +
       geom_hline(yintercept = 1, color = "lightGrey") +
-      # scale_color_gradientn(colors = c("green", "yellow", "red", "magenta", "black"),
-      #                       values = c(0, 25, 50, 100, 200)/max_infections,
-      #                       limits=c(0, max_infections), oob=squish,
-      #                      name = NULL, guide = FALSE) +
+      scale_color_gradientn(colors = c("green", "yellow", "red", "magenta", "black"),
+                            values = c(0, 25, 50, 100, 200)/max_infections,
+                            limits=c(0, max_infections), oob=squish,
+                           name = NULL, guide = FALSE) +
       scale_linetype_manual(values=c("dotted", "dotdash", "solid"), name = NULL) +
+      geom_vline(xintercept = as.numeric(ymd(date())), color = "black") +
+      geom_vline(xintercept = as.numeric(ymd(date()) - days(7)), color = "grey") +      
       labs(
         title = get_landkreis_by_id(active_landkreis()),
         x = "Date",

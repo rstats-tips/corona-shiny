@@ -492,8 +492,7 @@ Row
 Row
 ---------------------------------
 
-### `r renderText({ paste0(active_bundesland(), " am ", format(date(), format = "%d.%m.%Y"))  })`
-#### Gray background in past are min- and max-values of Landkreise, with prediction for Bundesland
+### `r renderText({ paste0(active_bundesland(), " am ", format(date(), format = "%d.%m.%Y"))  })`, Gray background in past are min- and max-values of Landkreise, with prediction for Bundesland
 
 
 ```{r}

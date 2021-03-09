@@ -98,7 +98,9 @@ get_initial_bundesland_data <- function(data_landkreise_per_day){
     group_by(Meldedatum, Bundesland) %>%
     summarize(
       infected = sum(infected),
-      Bevoelkerung = sum(Bevoelkerung)
+      Bevoelkerung = sum(Bevoelkerung),
+      infected_7_per_100k_max = max(infected_7_per_100k),
+      infected_7_per_100k_min = min(infected_7_per_100k)
     ) %>%
     ungroup() %>%
     complete(Meldedatum, Bundesland, fill = list(infected = 0)) %>%

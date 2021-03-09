@@ -493,6 +493,7 @@ Row
 ---------------------------------
 
 ### `r renderText({ paste0(active_bundesland(), " am ", format(date(), format = "%d.%m.%Y"))  })`
+#### Gray background in past are min- and max-values of Landkreise, with prediction for Bundesland
 
 
 ```{r}
@@ -530,6 +531,7 @@ Row
       geom_point(aes(color = infected_7_per_100k)) +
       geom_line(alpha = 0.5, color = "lightGrey", aes(linetype = "Bundesland")) +
       geom_line(data = data_germany_per_day(), alpha = 0.5, color = "blue",  aes(linetype = "Deutschland")) +
+      geom_ribbon(aes(ymin = infected_7_per_100k_min, ymax = infected_7_per_100k_max), alpha = 0.1) + 
       geom_vline(xintercept = as.numeric(ymd(date())), color = "black") +
       geom_vline(xintercept = as.numeric(ymd(date()) - days(7)), color = "grey") +
       

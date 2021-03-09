@@ -622,6 +622,25 @@ output$table_of_bundeslaender <-renderDT(
   )
 ```
 
+Row
+-----------------------------------------------------------------------
+
+### Zeitlicher Verlauf für `r renderText(active_bundesland())`
+
+```{r}
+DTOutput("table_of_bundesland_hist")
+output$table_of_bundesland_hist <-renderDT(
+    {
+      data_bundeslaender_per_day() %>%
+        filter(Bundesland == active_bundesland()) %>%
+        ungroup() %>%
+        select(Meldedatum, infected, infected_7_per_100k, delta_7_per_100k, R) %>%
+        arrange(desc(Meldedatum))
+    }
+  )
+```
+
+
 Gesamtansicht
 =====================================
 

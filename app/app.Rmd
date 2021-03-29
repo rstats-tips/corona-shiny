@@ -312,6 +312,8 @@ Per Klick auf einen Datenpunkt lässt sich der Zeitpunkt für die Kartendarstell
     last_date <- prediction$Meldedatum %>% max()
     R_max <- prediction$R %>% max()
     R_min <- prediction$R %>% min()
+    R_median <- prediction$R %>% median()
+    
     infections <- prediction %>% 
       filter(Meldedatum == max(Meldedatum)) %>% 
       pull(infected_7_per_100k)
@@ -327,6 +329,7 @@ Per Klick auf einen Datenpunkt lässt sich der Zeitpunkt für die Kartendarstell
       mutate(
         infections_min = infections * R_min ^ Wochen,
         infections_max = infections * R_max ^ Wochen,
+        infections_median = infections * R_median ^ Wochen,
         infected_7_per_100k = infections
       )
 
@@ -339,6 +342,7 @@ Per Klick auf einen Datenpunkt lässt sich der Zeitpunkt für die Kartendarstell
       geom_line(data = data_bundeslaender, alpha = 0.5, color = "blue",  aes(linetype = "Bundesland")) +
       geom_line(data = data_germany_per_day(), alpha = 0.5, color = "blue",  aes(linetype = "Deutschland")) +
       geom_ribbon(data = prediction, aes(x = Meldedatum, ymin = infections_min, ymax = infections_max), fill = "grey90") +
+      geom_line(data = prediction, aes(x = Meldedatum, y = infections_median), color = "gray80") +
       geom_vline(xintercept = as.numeric(ymd(date())), color = "black") +
       geom_vline(xintercept = as.numeric(ymd(date()) - days(7)), color = "grey") +
       scale_color_gradientn(colors = c("green", "yellow", "red", "magenta", "black"),
@@ -506,6 +510,8 @@ Row
     last_date <- prediction$Meldedatum %>% max()
     R_max <- prediction$R %>% max()
     R_min <- prediction$R %>% min()
+    R_median <- prediction$R %>% median()
+    
     infections <- prediction %>% 
       filter(Meldedatum == max(Meldedatum)) %>% 
       pull(infected_7_per_100k)
@@ -521,6 +527,7 @@ Row
       mutate(
         infections_min = infections * R_min ^ Wochen,
         infections_max = infections * R_max ^ Wochen,
+        infections_median = infections * R_median ^ Wochen,
         infected_7_per_100k = infections
       )
     
@@ -535,6 +542,7 @@ Row
       geom_vline(xintercept = as.numeric(ymd(date()) - days(7)), color = "grey") +
       
       geom_ribbon(data = prediction, aes(x = Meldedatum, ymin = infections_min, ymax = infections_max), fill = "grey90") +
+      geom_line(data = prediction, aes(x = Meldedatum, y = infections_median), color = "gray80") +
       
       scale_color_gradientn(colors = c("green", "yellow", "red", "magenta", "black"),
                             values = c(0, 25, 50, 100, 200)/max_infections,
